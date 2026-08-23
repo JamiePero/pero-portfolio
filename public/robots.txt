@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# TODO: Pero to update the domain once the production URL is confirmed.
+Sitemap: https://pero.dev/sitemap.xml

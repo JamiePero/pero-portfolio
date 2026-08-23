@@ -1,0 +1,467 @@
+@import "tailwindcss";
+
+/* Lets us write `light:` variants where a dark-first rule needs an override. */
+@custom-variant light (&:where(.light, .light *));
+
+/* ---------------------------------------------------------------------------
+   Theme tokens. Dark is the default (:root); light mode is opt-in via the
+   `.light` class on <html>, set by useTheme + the pre-paint script in index.html.
+
+   Note: the tokens deliberately have NO css transition on them. Chromium does
+   not re-run a transition on a property whose value comes from var() when only
+   the variable changes — the element keeps painting the stale colour, which
+   left the page half-themed. The 350ms cross-fade is done instead with the View
+   Transitions API in useTheme.ts, which snapshots the whole page and fades
+   between the two states. See the ::view-transition rules at the bottom.
+   --------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------
+   Gradient button animation variables.
+
+   These are registered so they can be *transitioned* — an unregistered custom
+   property is just a string and can't interpolate. Unlike the theme tokens
+   above, each is `inherits: false` and is read by the same element that sets
+   it, which is the case Chromium animates reliably.
+
+   Declared at top level rather than inside @layer base: Tailwind v4 uses native
+   cascade layers, and @property is not a layerable rule.
+   --------------------------------------------------------------------------- */
+@property --pos-x {
+  syntax: "<percentage>";
+  initial-value: 11.14%;
+  inherits: false;
+}
+@property --pos-y {
+  syntax: "<percentage>";
+  initial-value: 140%;
+  inherits: false;
+}
+@property --spread-x {
+  syntax: "<percentage>";
+  initial-value: 150%;
+  inherits: false;
+}
+@property --spread-y {
+  syntax: "<percentage>";
+  initial-value: 180.06%;
+  inherits: false;
+}
+@property --color-1 {
+  syntax: "<color>";
+  initial-value: #08040e;
+  inherits: false;
+}
+@property --color-2 {
+  syntax: "<color>";
+  initial-value: #1a0b2e;
+  inherits: false;
+}
+@property --color-3 {
+  syntax: "<color>";
+  initial-value: #43196f;
+  inherits: false;
+}
+@property --color-4 {
+  syntax: "<color>";
+  initial-value: #7b34c4;
+  inherits: false;
+}
+@property --color-5 {
+  syntax: "<color>";
+  initial-value: #a86be0;
+  inherits: false;
+}
+@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 20deg;
+  inherits: true;
+}
+@property --border-color-1 {
+  syntax: "<color>";
+  initial-value: hsla(280, 90%, 80%, 0.3);
+  inherits: true;
+}
+@property --border-color-2 {
+  syntax: "<color>";
+  initial-value: hsla(320, 85%, 85%, 0.55);
+  inherits: true;
+}
+@property --stop-1 {
+  syntax: "<percentage>";
+  initial-value: 37.35%;
+  inherits: false;
+}
+@property --stop-2 {
+  syntax: "<percentage>";
+  initial-value: 61.36%;
+  inherits: false;
+}
+@property --stop-3 {
+  syntax: "<percentage>";
+  initial-value: 78.42%;
+  inherits: false;
+}
+@property --stop-4 {
+  syntax: "<percentage>";
+  initial-value: 89.52%;
+  inherits: false;
+}
+@property --stop-5 {
+  syntax: "<percentage>";
+  initial-value: 100%;
+  inherits: false;
+}
+
+/* Brand palette: iridescent violet and magenta over a deep purple-black —
+   sampled from the hero blob's glass material so the page and the 3D scene
+   read as one surface. Deliberately not pure #000; the base carries violet. */
+:root {
+  --bg: #0b0710;
+  --bg-elevated: #130c1b;
+  --surface: #180f22;
+  --line: rgb(255 255 255 / 0.1);
+  --line-strong: rgb(255 255 255 / 0.2);
+  --ink: #f4f0f8;
+  --muted: #a294b5;
+  --accent: #b06bff;
+  --accent-2: #ff5ca8;
+  --on-accent: #100719;
+  --glow: rgb(176 107 255 / 0.35);
+  /* Cursor-tracking spotlight. */
+  --spotlight-color: rgb(216 180 255 / 0.4);
+  color-scheme: dark;
+}
+
+/* Light mode keeps the violet family but drops to a deeper, readable accent —
+   the vivid dark-mode violet can't carry text contrast on a near-white page. */
+.light {
+  --bg: #f7f4fb;
+  --bg-elevated: #ffffff;
+  --surface: #ffffff;
+  --line: rgb(26 18 36 / 0.12);
+  --line-strong: rgb(26 18 36 / 0.24);
+  --ink: #1a1224;
+  --muted: #675a78;
+  --accent: #7c3aed;
+  --accent-2: #c2255c;
+  --on-accent: #ffffff;
+  --glow: rgb(124 58 237 / 0.25);
+  --spotlight-color: rgb(168 120 255 / 0.32);
+  color-scheme: light;
+}
+
+/* Map the semantic tokens onto Tailwind utilities: bg-bg, text-ink, border-line… */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-elevated: var(--bg-elevated);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent2: var(--accent-2);
+  --color-on-accent: var(--on-accent);
+
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: auto; /* Lenis drives smooth scrolling; native would fight it */
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    /* `clip`, not `hidden`: overflow-x:hidden turns body into a scroll
+       container, which breaks Lenis's scroll math and any position:sticky
+       inside it (the pinned case-study columns). `clip` contains the overflow
+       without creating a scroll box. */
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background-color: var(--accent);
+    color: var(--on-accent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer components {
+  /* Section shell: consistent rhythm + max width for every block on the page. */
+  .section-shell {
+    width: 100%;
+    max-width: 78rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  @media (min-width: 768px) {
+    .section-shell {
+      padding-inline: 2.5rem;
+    }
+  }
+
+  /* Small monospace label that prefixes each section ("01 / About") */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* Animated underline used on nav + inline links */
+  .link-underline {
+    position: relative;
+  }
+  .link-underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    height: 1px;
+    width: 100%;
+    background-color: var(--accent);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .link-underline:hover::after,
+  .link-underline[data-active="true"]::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* -------------------------------------------------------------------------
+     Animated gradient button.
+
+     At rest it reads as deep navy with a silver rim; on hover the radial origin
+     swings to the bottom-left corner and yellow floods in from there, fading
+     back to charcoal across the button. Keeping the bright stop confined to the
+     first ~9% is what lets white label text stay readable on hover.
+     ------------------------------------------------------------------------- */
+  .gradient-button {
+    position: relative;
+    appearance: none;
+    cursor: pointer;
+    background: radial-gradient(
+      var(--spread-x) var(--spread-y) at var(--pos-x) var(--pos-y),
+      var(--color-1) var(--stop-1),
+      var(--color-2) var(--stop-2),
+      var(--color-3) var(--stop-3),
+      var(--color-4) var(--stop-4),
+      var(--color-5) var(--stop-5)
+    );
+    transition:
+      --pos-x 0.5s,
+      --pos-y 0.5s,
+      --spread-x 0.5s,
+      --spread-y 0.5s,
+      --color-1 0.5s,
+      --color-2 0.5s,
+      --color-3 0.5s,
+      --color-4 0.5s,
+      --color-5 0.5s,
+      --border-angle 0.5s,
+      --border-color-1 0.5s,
+      --border-color-2 0.5s,
+      --stop-1 0.5s,
+      --stop-2 0.5s,
+      --stop-3 0.5s,
+      --stop-4 0.5s,
+      --stop-5 0.5s;
+  }
+
+  /* Gradient border, drawn as a masked ring so it follows border-radius:
+     inherit — which is what lets the same class sit on the site's pill-shaped
+     CTAs as well as the standalone rounded-[11px] component. */
+  .gradient-button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      var(--border-angle),
+      var(--border-color-1),
+      var(--border-color-2)
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .gradient-button:hover {
+    --pos-x: 0%;
+    --pos-y: 91.51%;
+    --spread-x: 120.24%;
+    --spread-y: 103.18%;
+    --color-1: #ff8ec4;
+    --color-2: #d453e8;
+    --color-3: #7b34c4;
+    --color-4: #240c3c;
+    --color-5: #08040e;
+    --border-angle: 190deg;
+    --border-color-1: hsla(320, 100%, 85%, 0.55);
+    --border-color-2: hsla(275, 90%, 90%, 0.8);
+    --stop-1: 0%;
+    --stop-2: 8.8%;
+    --stop-3: 21.44%;
+    --stop-4: 71.34%;
+    --stop-5: 85.76%;
+  }
+
+  /* Silver-led alternate: brighter and cooler at rest, yellow only on hover. */
+  .gradient-button-variant {
+    --color-1: #08040e;
+    --color-2: #2b1150;
+    --color-3: #5c3fd6;
+    --color-4: #3fb0c8;
+    --color-5: #b8e6f0;
+    --border-angle: 200deg;
+    --border-color-1: hsla(190, 80%, 88%, 0.6);
+    --border-color-2: hsla(280, 80%, 88%, 0.25);
+  }
+
+  .gradient-button-variant:hover {
+    --pos-x: 0%;
+    --pos-y: 95.51%;
+    --spread-x: 110.24%;
+    --spread-y: 110.2%;
+    --color-1: #9df0ff;
+    --color-2: #3fb0c8;
+    --color-3: #5c3fd6;
+    --color-4: #1d0b36;
+    --color-5: #08040e;
+    --stop-1: 0%;
+    --stop-2: 10%;
+    --stop-3: 35.44%;
+    --stop-4: 71.34%;
+    --stop-5: 90.76%;
+    --border-angle: 210deg;
+    --border-color-1: hsla(190, 90%, 88%, 0.4);
+    --border-color-2: hsla(285, 90%, 92%, 0.8);
+  }
+
+  /* Safety net for the R3F canvas. R3F sizes the canvas from a ResizeObserver
+     callback; if that measurement never lands the element falls back to the
+     HTML default of 300x150 and sits in the corner. Forcing the box to fill its
+     host means the worst case is a soft render, not a broken layout. No-op when
+     R3F measures normally. */
+  .blob-canvas canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* Drift keyframes for the CSS blob fallback. Long, offset periods so the
+     three lobes never sync up into an obvious loop. */
+  @keyframes blob-a {
+    0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+    50% { transform: translate(-46%, -54%) scale(1.09) rotate(12deg); }
+  }
+  @keyframes blob-b {
+    0%, 100% { transform: translate(-62%, -38%) scale(1) rotate(0deg); }
+    50% { transform: translate(-58%, -44%) scale(1.13) rotate(-14deg); }
+  }
+  @keyframes blob-c {
+    0%, 100% { transform: translate(-34%, -62%) scale(1) rotate(0deg); }
+    50% { transform: translate(-40%, -56%) scale(1.08) rotate(10deg); }
+  }
+
+  /* Faint grid used behind the hero + pricing builder */
+  .grid-backdrop {
+    background-image:
+      linear-gradient(to right, var(--line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 20%, transparent 75%);
+  }
+}
+
+/* Hide the native cursor only when our custom one is actually running
+   (desktop + fine pointer + motion allowed). */
+body[data-custom-cursor="true"],
+body[data-custom-cursor="true"] a,
+body[data-custom-cursor="true"] button {
+  cursor: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Applied to <html> only for the instant the theme class is swapped.
+
+   Chromium will not re-run a transition on a property whose value comes from
+   var(--token) when only the token changes — it keeps painting the stale
+   colour, permanently. Any element with `transition-colors` (most cards, links,
+   inputs and buttons here) would therefore stay locked to the previous theme.
+   Killing transitions while the tokens change forces those elements to resolve
+   the new colours immediately; they're restored a frame later so hover states
+   still animate. The visible cross-fade comes from the view transition below.
+   --------------------------------------------------------------------------- */
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
+}
+
+/* ---------------------------------------------------------------------------
+   Theme cross-fade. useTheme.ts swaps the `.light` class inside
+   document.startViewTransition(), so the browser fades a snapshot of the old
+   page into the new one — every themed surface changes together in one pass.
+   Browsers without View Transitions just get an instant, correct swap.
+   --------------------------------------------------------------------------- */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 360ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  /* The two snapshots sit on top of each other; blending avoids a flash of the
+     page background showing through mid-fade. */
+  mix-blend-mode: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.01ms !important;
+  }
+}
