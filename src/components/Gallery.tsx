@@ -2,12 +2,25 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useState } from "react";
 import { curlsCaseStudy, galleryPieces, type GalleryPiece } from "../data/gallery";
 import { GalleryLightbox } from "./GalleryLightbox";
+import { MagneticButton } from "./MagneticButton";
 import { Placeholder } from "./Placeholder";
 import { Reveal, RevealWords } from "./Reveal";
 import { SectionHeading } from "./SectionHeading";
 
+/**
+ * How many pieces show before the grid is expanded. The 4c Curls series alone
+ * runs to sixteen renders of the same product, which would bury the rest of the
+ * page under one project.
+ */
+const COLLAPSED_COUNT = 6;
+
 export function Gallery() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [expanded, setExpanded] = useState(false);
+
+  const visiblePieces = expanded ? galleryPieces : galleryPieces.slice(0, COLLAPSED_COUNT);
+  const hasMore = galleryPieces.length > COLLAPSED_COUNT;
+  const pendingCount = galleryPieces.filter((piece) => !piece.src).length;
 
   return (
     <section id="gallery" className="relative scroll-mt-24 py-24 md:py-32">
@@ -47,9 +60,11 @@ export function Gallery() {
           </div>
         </Reveal>
 
-        {/* CSS columns give a true masonry flow without a layout library. */}
+        {/* CSS columns give a true masonry flow without a layout library.
+            `slice` keeps original indices intact, so the lightbox still opens
+            the right piece whether the grid is collapsed or expanded. */}
         <div className="mt-10 gap-5 [column-count:1] sm:[column-count:2] lg:[column-count:3]">
-          {galleryPieces.map((piece, index) => (
+          {visiblePieces.map((piece, index) => (
             <GalleryCard
               key={piece.id}
               piece={piece}
@@ -59,12 +74,36 @@ export function Gallery() {
           ))}
         </div>
 
-        <Reveal delay={0.1}>
-          <p className="mt-8 font-mono text-[11px] uppercase tracking-[0.14em] text-muted opacity-60">
-            {/* TODO: Pero to drop real assets into /public/gallery/ and set `src` in src/data/gallery.ts */}
-            Gallery artwork pending upload
-          </p>
-        </Reveal>
+        {hasMore ? (
+          <Reveal delay={0.1}>
+            <div className="mt-10 flex justify-center">
+              <MagneticButton
+                variant="outline"
+                onClick={() => setExpanded((open) => !open)}
+                className="px-7"
+                ariaLabel={
+                  expanded
+                    ? "Show fewer gallery pieces"
+                    : `Show all ${galleryPieces.length} gallery pieces`
+                }
+              >
+                {expanded ? "Show less" : `View all ${galleryPieces.length}`}
+                <ChevronIcon flipped={expanded} />
+              </MagneticButton>
+            </div>
+          </Reveal>
+        ) : null}
+
+        {pendingCount > 0 ? (
+          <Reveal delay={0.1}>
+            <p className="mt-8 text-center font-mono text-[11px] uppercase tracking-[0.14em] text-muted opacity-60">
+              {/* TODO: Pero to drop assets into /public/gallery/, run
+                  `npm run optimize:images public/gallery`, then set `src` in
+                  src/data/gallery.ts */}
+              {pendingCount} of {galleryPieces.length} artworks pending upload
+            </p>
+          </Reveal>
+        ) : null}
       </div>
 
       <GalleryLightbox
@@ -74,6 +113,23 @@ export function Gallery() {
         onNavigate={setActiveIndex}
       />
     </section>
+  );
+}
+
+function ChevronIcon({ flipped }: { flipped: boolean }) {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`h-4 w-4 transition-transform duration-300 ${flipped ? "rotate-180" : ""}`}
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
   );
 }
 
@@ -107,6 +163,7 @@ function GalleryCard({
           {piece.src ? (
             <img
               src={piece.src}
+              srcSet={piece.src2x ? `${piece.src} 1x, ${piece.src2x} 2x` : undefined}
               alt={piece.alt}
               loading="lazy"
               decoding="async"
