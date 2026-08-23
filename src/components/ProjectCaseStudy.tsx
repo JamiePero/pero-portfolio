@@ -1,6 +1,6 @@
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { useRef, type ReactNode } from "react";
-import type { Project } from "../data/projects";
+import { useRef, useState, type ReactNode } from "react";
+import type { Project, ProjectImage } from "../data/projects";
 import { Placeholder } from "./Placeholder";
 import { Reveal, RevealWords } from "./Reveal";
 
@@ -153,20 +153,10 @@ export function ProjectCaseStudy({
         <div className="flex flex-col gap-6 lg:gap-10">
           {project.images.map((image, index) => (
             <ParallaxFrame key={image.caption} index={index}>
-              {image.src ? (
-                <img
-                  src={image.src}
-                  alt={image.alt}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full rounded-xl border border-line object-cover"
-                />
-              ) : (
-                <Placeholder
-                  label={image.alt}
-                  aspect={image.aspect ?? (index === 0 ? "wide" : "landscape")}
-                />
-              )}
+              <CaseStudyImage
+                image={image}
+                fallbackAspect={image.aspect ?? (index === 0 ? "wide" : "landscape")}
+              />
               <figcaption className="mt-3 font-mono text-[11px] leading-relaxed text-muted">
                 {image.caption}
               </figcaption>
@@ -180,6 +170,41 @@ export function ProjectCaseStudy({
         </div>
       </div>
     </article>
+  );
+}
+
+/**
+ * A case study image, falling back to the pending frame if the file isn't
+ * there.
+ *
+ * Assets arrive piecemeal on this project, so an entry's `src` often gets set
+ * before the file is actually in `public/`. Without this, that gap renders a
+ * broken-image icon, which looks worse than an honest placeholder and is easy
+ * to ship without noticing. Any load failure quietly reverts to the same frame
+ * that shows when `src` is unset.
+ */
+function CaseStudyImage({
+  image,
+  fallbackAspect,
+}: {
+  image: ProjectImage;
+  fallbackAspect: "wide" | "landscape" | "portrait" | "square";
+}) {
+  const [failed, setFailed] = useState(false);
+
+  if (!image.src || failed) {
+    return <Placeholder label={image.alt} aspect={fallbackAspect} />;
+  }
+
+  return (
+    <img
+      src={image.src}
+      alt={image.alt}
+      loading="lazy"
+      decoding="async"
+      onError={() => setFailed(true)}
+      className="w-full rounded-xl border border-line object-cover"
+    />
   );
 }
 

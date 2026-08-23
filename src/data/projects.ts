@@ -145,27 +145,29 @@ export const projects: Project[] = [
     ],
     liveUrl: undefined,
     images: [
-      // TODO: Pero to export these and drop them in /public/work/jexi/, then set
-      // `src` on each. Placeholder frames render until then, and the `aspect`
-      // on each entry is the shape the layout expects.
-      //
-      // Smart Bin renders lead the case study — they're the strongest single
-      // visual here, and the only one that shows the hardware side of Jexi.
-      //   smart-bin-hero.webp      front 3/4 view, 4:3, product centred
-      //   smart-bin-detail.webp    exploded or detail shot, 4:3
-      //   app-home.webp            phone screenshot, portrait
-      //   app-modules.webp         phone screenshot, portrait
-      //   figma-system.webp        Figma board, wide
       {
-        alt: "Jexi Smart Bin, front three-quarter view of the finished product design",
-        caption: "The Smart Bin, modelled in Fusion 360",
+        src: "/work/jexi/color-variants.png",
+        alt: "Jexi smart bin shown in three colour variants, black, grey and white",
+        caption: "Three colourways, modelled in Fusion 360",
         aspect: "landscape",
       },
       {
-        alt: "Jexi Smart Bin detail view showing internal components and construction",
-        caption: "Detail view, showing how it comes apart",
-        aspect: "landscape",
+        src: "/work/jexi/in-context.png",
+        alt: "Jexi smart bin styled in a home setting",
+        caption: "In context, where it actually has to sit",
+        aspect: "wide",
       },
+      {
+        src: "/work/jexi/exploded-parts.png",
+        alt: "Exploded view of the Jexi smart bin showing lid, sensor mechanism and body components",
+        caption: "Exploded: lid, sensor mechanism and body",
+        aspect: "wide",
+      },
+      // TODO: Pero to supply app screenshots and a Figma board, then set `src`
+      // on the three below. They render as pending frames until then.
+      //   app-home.webp       phone screenshot, portrait
+      //   app-modules.webp    phone screenshot, portrait
+      //   figma-system.webp   Figma board, wide
       {
         alt: "Jexi app home screen showing the collection schedule",
         caption: "Home, with the collection schedule up front",
