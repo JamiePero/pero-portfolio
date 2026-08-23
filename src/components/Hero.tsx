@@ -76,11 +76,14 @@ export function Hero() {
       id="hero"
       className="relative flex min-h-[100svh] flex-col justify-center overflow-hidden pt-24 pb-16"
     >
-      {/* Ambient glow, colour-matched to the blob and sitting behind it */}
+      {/* Ambient glow, colour-matched to the visual and sitting behind it.
+          The main lobe is centred on mobile — anchored right at a 44rem radius
+          it fell almost entirely outside a 375px viewport, so most of the
+          ambient colour was off-screen. */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-30">
-        <div className="absolute right-[6%] top-1/2 h-[44rem] w-[44rem] -translate-y-1/2 translate-x-1/6 rounded-full bg-accent opacity-[0.16] blur-[150px] lg:right-[2%]" />
-        <div className="absolute right-[18%] top-[22%] h-72 w-72 rounded-full bg-accent2 opacity-[0.13] blur-[120px]" />
-        <div className="absolute left-[4%] bottom-[12%] h-72 w-72 rounded-full bg-accent opacity-[0.07] blur-[130px]" />
+        <div className="absolute left-1/2 top-1/2 h-[34rem] w-[34rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent opacity-[0.22] blur-[130px] lg:left-auto lg:right-[2%] lg:h-[44rem] lg:w-[44rem] lg:translate-x-0 lg:opacity-[0.16] lg:blur-[150px]" />
+        <div className="absolute right-[4%] top-[18%] h-64 w-64 rounded-full bg-accent2 opacity-[0.18] blur-[110px] lg:right-[18%] lg:top-[22%] lg:h-72 lg:w-72 lg:opacity-[0.13] lg:blur-[120px]" />
+        <div className="absolute bottom-[10%] left-[2%] h-56 w-56 rounded-full bg-accent opacity-[0.12] blur-[110px] lg:bottom-[12%] lg:left-[4%] lg:h-72 lg:w-72 lg:opacity-[0.07] lg:blur-[130px]" />
       </div>
 
       {/* Thin diagonal arcs — depth without distraction, per the reference */}
@@ -98,10 +101,14 @@ export function Hero() {
 
       {/* Blob. Beside the copy from lg; behind it, dimmed, on smaller screens
           so the hero still has the glass character without pushing content down. */}
+      {/* On mobile the copy fills roughly 24%–80% of the section, so there's no
+          clear area to move this into — it stays full-bleed behind the text and
+          is simply allowed to be visible. It used to sit at 40% opacity under a
+          near-opaque scrim, which between them wiped it out entirely. */}
       <motion.div
         aria-hidden
         style={reduced ? undefined : { y: blobY }}
-        className="pointer-events-none absolute inset-y-0 right-0 -z-10 w-full opacity-40 sm:opacity-50 lg:left-auto lg:w-[56%] lg:opacity-100"
+        className="pointer-events-none absolute inset-y-0 right-0 -z-10 w-full scale-125 opacity-80 sm:scale-110 sm:opacity-90 lg:left-auto lg:w-[56%] lg:scale-100 lg:opacity-100"
       >
         <div className="h-full w-full">
           {useGlass ? (
@@ -114,11 +121,14 @@ export function Hero() {
         </div>
       </motion.div>
 
-      {/* Scrim: keeps the headline legible where it crosses the blob on the
-          narrow layouts where the two share space. */}
+      {/* Scrim: keeps the headline legible where it crosses the visual.
+          Mobile runs a soft vertical veil at partial strength — the copy sits
+          top-to-middle there, so knocking back the top is enough and the lower
+          half stays clear. The diagonal version only makes sense at lg, where
+          the visual is in its own right-hand column. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-[5] bg-[linear-gradient(100deg,var(--bg)_28%,transparent_78%)] lg:bg-[linear-gradient(100deg,var(--bg)_38%,transparent_62%)]"
+        className="pointer-events-none absolute inset-0 -z-[5] bg-[linear-gradient(180deg,var(--bg)_0%,transparent_88%)] opacity-75 lg:bg-[linear-gradient(100deg,var(--bg)_38%,transparent_62%)] lg:opacity-100"
       />
 
       <motion.div
