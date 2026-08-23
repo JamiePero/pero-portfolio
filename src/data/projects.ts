@@ -3,6 +3,13 @@ export type ProjectImage = {
   src?: string;
   alt: string;
   caption: string;
+  /**
+   * Shape of the placeholder frame, and a note to whoever exports the asset
+   * about what shape is expected. Real images render at their natural ratio,
+   * so this only drives the pending state. Defaults to wide for the primary
+   * image and landscape for the rest.
+   */
+  aspect?: "wide" | "landscape" | "portrait" | "square";
 };
 
 export type Project = {
@@ -138,10 +145,42 @@ export const projects: Project[] = [
     ],
     liveUrl: undefined,
     images: [
-      // TODO: Pero to provide Figma frames / app screenshots — /public/work/jexi/
-      { alt: "Jexi app home screen", caption: "Home, with the collection schedule up front" },
-      { alt: "Jexi module screens", caption: "The three modules" },
-      { alt: "Jexi Figma design system", caption: "The Figma design system handed to Lovable.dev" },
+      // TODO: Pero to export these and drop them in /public/work/jexi/, then set
+      // `src` on each. Placeholder frames render until then, and the `aspect`
+      // on each entry is the shape the layout expects.
+      //
+      // Smart Bin renders lead the case study — they're the strongest single
+      // visual here, and the only one that shows the hardware side of Jexi.
+      //   smart-bin-hero.webp      front 3/4 view, 4:3, product centred
+      //   smart-bin-detail.webp    exploded or detail shot, 4:3
+      //   app-home.webp            phone screenshot, portrait
+      //   app-modules.webp         phone screenshot, portrait
+      //   figma-system.webp        Figma board, wide
+      {
+        alt: "Jexi Smart Bin, front three-quarter view of the finished product design",
+        caption: "The Smart Bin, modelled in Fusion 360",
+        aspect: "landscape",
+      },
+      {
+        alt: "Jexi Smart Bin detail view showing internal components and construction",
+        caption: "Detail view, showing how it comes apart",
+        aspect: "landscape",
+      },
+      {
+        alt: "Jexi app home screen showing the collection schedule",
+        caption: "Home, with the collection schedule up front",
+        aspect: "portrait",
+      },
+      {
+        alt: "Jexi app screens showing the three modules",
+        caption: "The three modules",
+        aspect: "portrait",
+      },
+      {
+        alt: "Jexi Figma design system with components and flows",
+        caption: "The Figma design system handed to Lovable.dev",
+        aspect: "wide",
+      },
     ],
   },
 ];

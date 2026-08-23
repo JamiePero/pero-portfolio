@@ -155,7 +155,10 @@ export function ProjectCaseStudy({ project }: { project: Project }) {
                   className="w-full rounded-xl border border-line object-cover"
                 />
               ) : (
-                <Placeholder label={image.alt} aspect={index === 0 ? "wide" : "landscape"} />
+                <Placeholder
+                  label={image.alt}
+                  aspect={image.aspect ?? (index === 0 ? "wide" : "landscape")}
+                />
               )}
               <figcaption className="mt-3 font-mono text-[11px] leading-relaxed text-muted">
                 {image.caption}
