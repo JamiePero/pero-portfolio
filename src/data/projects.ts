@@ -1,6 +1,8 @@
 export type ProjectImage = {
   /** Leave undefined to render the marked placeholder frame instead. */
   src?: string;
+  /** Retina variant. Produced alongside `src` by `npm run optimize:images`. */
+  src2x?: string;
   alt: string;
   caption: string;
   /**
@@ -146,19 +148,21 @@ export const projects: Project[] = [
     liveUrl: undefined,
     images: [
       {
-        src: "/work/jexi/color-variants.png",
+        src: "/work/jexi/color-variants.webp",
+        src2x: "/work/jexi/color-variants@2x.webp",
         alt: "Jexi smart bin shown in three colour variants, black, grey and white",
         caption: "Three colourways, modelled in Fusion 360",
         aspect: "landscape",
       },
+      // TODO: Pero to add in-context.png and exploded-parts.png to
+      // public/work/jexi/, then run `npm run optimize:images` and point these at
+      // the .webp pair it produces. They render as pending frames until then.
       {
-        src: "/work/jexi/in-context.png",
         alt: "Jexi smart bin styled in a home setting",
         caption: "In context, where it actually has to sit",
         aspect: "wide",
       },
       {
-        src: "/work/jexi/exploded-parts.png",
         alt: "Exploded view of the Jexi smart bin showing lid, sensor mechanism and body components",
         caption: "Exploded: lid, sensor mechanism and body",
         aspect: "wide",

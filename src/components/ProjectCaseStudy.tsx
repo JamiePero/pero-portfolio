@@ -199,6 +199,7 @@ function CaseStudyImage({
   return (
     <img
       src={image.src}
+      srcSet={image.src2x ? `${image.src} 1x, ${image.src2x} 2x` : undefined}
       alt={image.alt}
       loading="lazy"
       decoding="async"
