@@ -111,16 +111,18 @@ export const projects: Project[] = [
     solution:
       "Jexi is a mobile app that puts collection, tracking and coordination in one place. I designed the full product in Figma — flows, component library, the lot — then handed the system off to Lovable.dev to build against, which took it from static frames to a working app without losing the design intent.",
     highlights: [
-      // TODO: Pero to provide the three module names + what each one does.
-      // Replace these three placeholder rows with the real modules.
-      "Module 01 — TODO: Pero to provide name + functionality",
-      "Module 02 — TODO: Pero to provide name + functionality",
-      "Module 03 — TODO: Pero to provide name + functionality",
-      "Design system built in Figma first, then handed to Lovable.dev for the build",
+      // TODO: Pero to provide the three module names + what each one does, then
+      // expand the "three modules" line below into one row per module.
+      // Kept deliberately neutral rather than as visible TODO text — these
+      // render as body copy on the live site.
+      "Full product designed in Figma first — flows, component library, states",
+      "Structured as three modules",
+      "Handed to Lovable.dev to build against, going from static frames to a working app without losing the design intent",
+      "Mobile-first — built for the people doing the collecting, not for a desk",
     ],
     tech: ["Figma", "Lovable.dev", "Design systems", "Mobile UX"],
     impact: [
-      { value: "3 modules", label: "TODO: Pero to name the modules" },
+      { value: "3", label: "Modules making up the product" },
       { value: "Figma → build", label: "Design-led handoff to Lovable.dev" },
       { value: "Mobile-first", label: "Built for the people doing the collecting" },
     ],
@@ -128,7 +130,7 @@ export const projects: Project[] = [
     images: [
       // TODO: Pero to provide Figma frames / app screenshots — /public/work/jexi/
       { alt: "Jexi app home screen", caption: "Home — collection schedule at a glance" },
-      { alt: "Jexi module screens", caption: "The three modules — TODO: Pero to confirm naming" },
+      { alt: "Jexi module screens", caption: "The three modules" },
       { alt: "Jexi Figma design system", caption: "Figma design system handed to Lovable.dev" },
     ],
   },
