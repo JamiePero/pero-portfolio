@@ -6,7 +6,7 @@
 export const site = {
   name: "Pero",
   fullName: "Pero",
-  role: "Builder — hardware, software & design",
+  role: "Builder working across hardware, software and design",
   // TODO: Pero to confirm — this is the address the contact form falls back to.
   email: "jamiepero31@gmail.com",
   location: "Ghana",
@@ -18,7 +18,7 @@ export const site = {
   // public/robots.txt and public/sitemap.xml — update all four together.
   url: "https://jamiepero.com",
   description:
-    "Pero is a builder based in Ghana working across hardware, software and design — 3D modelling, brand identity, Arduino/ESP32 systems, and web development with technical SEO.",
+    "Pero is a builder based in Ghana. He works across 3D modelling, brand identity, Arduino and ESP32 systems, and web development with technical SEO.",
 } as const;
 
 /** Roles cycled through by the hero subhead. */

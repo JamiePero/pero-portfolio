@@ -49,7 +49,7 @@ export const siteTypes: SiteType[] = [
     description: "One focused page built to convert. Product launch, campaign, or waitlist.",
     range: [400, 800],
     includes: ["Single page, custom design", "Mobile-first responsive build", "Contact / signup form", "Basic on-page SEO", "Deployment + domain setup"],
-    weeks: "1–2 weeks",
+    weeks: "1 to 2 weeks",
   },
   {
     id: "business",
@@ -57,15 +57,15 @@ export const siteTypes: SiteType[] = [
     description: "A multi-page site that explains what you do and brings in enquiries.",
     range: [900, 1800],
     includes: ["Up to 6 custom pages", "Mobile-first responsive build", "Contact + enquiry routing", "On-page SEO across all pages", "Deployment + domain setup", "One round of post-launch tweaks"],
-    weeks: "2–4 weeks",
+    weeks: "2 to 4 weeks",
   },
   {
     id: "ecommerce",
     label: "E-commerce",
-    description: "Storefront, cart and checkout — including mobile money and card rails.",
+    description: "Storefront, cart and checkout, including mobile money and card rails.",
     range: [1800, 4000],
     includes: ["Product catalogue + collections", "Cart and checkout flow", "Payment integration (Paystack / MoMo / card)", "Order management", "Product-level SEO", "Deployment + domain setup"],
-    weeks: "4–7 weeks",
+    weeks: "4 to 7 weeks",
   },
   {
     id: "webapp",
@@ -73,7 +73,7 @@ export const siteTypes: SiteType[] = [
     description: "Custom product with accounts, dashboards and real logic behind it.",
     range: [3000, 9000],
     includes: ["Custom frontend + backend", "Auth and user accounts", "Database + API design", "Admin dashboard", "Deployment and monitoring"],
-    weeks: "6–12 weeks",
+    weeks: "6 to 12 weeks",
   },
   {
     id: "portfolio",
@@ -81,7 +81,7 @@ export const siteTypes: SiteType[] = [
     description: "A site that makes your work the point. Designed around the work itself.",
     range: [500, 1200],
     includes: ["Custom design around your work", "Project / case study layouts", "Image optimisation + lightbox", "Contact routing", "Deployment + domain setup"],
-    weeks: "1–3 weeks",
+    weeks: "1 to 3 weeks",
   },
 ];
 
@@ -95,7 +95,7 @@ export const extras: Extra[] = [
   {
     id: "copy",
     label: "Copywriting",
-    description: "Written from scratch for every page — headlines, body, CTAs.",
+    description: "Written from scratch for every page: headlines, body, CTAs.",
     range: [200, 700],
   },
   {
@@ -113,13 +113,13 @@ export const extras: Extra[] = [
   {
     id: "payments",
     label: "Booking / Payments",
-    description: "Take bookings or payments — Paystack, Mobile Money or Stripe.",
+    description: "Take bookings or payments through Paystack, Mobile Money or Stripe.",
     range: [350, 1000],
   },
   {
     id: "brand",
     label: "Logo & Brand",
-    description: "Identity work bundled in — mark, colour system and type scale.",
+    description: "Identity work bundled in: mark, colour system and type scale.",
     range: [300, 900],
   },
 ];

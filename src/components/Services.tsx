@@ -12,7 +12,7 @@ export function Services() {
         <SectionHeading
           eyebrow="04 / Services"
           title="What you can hire me for."
-          lead="Four things I do properly. Most projects end up being two or three of them at once — which is usually the point of hiring one person instead of three."
+          lead="Four things I do properly. Most projects end up needing two or three of them at once, which is usually the point of hiring one person instead of three."
         />
 
         <ul className="mt-14 grid gap-4 sm:grid-cols-2">

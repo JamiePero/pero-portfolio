@@ -25,7 +25,7 @@ export const services: Service[] = [
     title: "Logo & Brand Design",
     summary: "Marks, identity systems and packaging that hold up in the real world.",
     detail:
-      "Not just a logo file — a wordmark, colour system, type scale and the packaging artwork to go with it. Built so it still works at thumbnail size and on a printed carton.",
+      "You get more than a logo file. A wordmark, colour system, type scale, and the packaging artwork to go with it. Built so it still works at thumbnail size and on a printed carton.",
     tools: ["Illustrator", "Blender", "Canva"],
   },
   {
@@ -34,7 +34,7 @@ export const services: Service[] = [
     title: "Arduino / ESP32 Development",
     summary: "Embedded systems, IoT devices and DIY hardware that ships.",
     detail:
-      "Firmware, sensor integration, wireless connectivity and the enclosure to put it in. I work through the whole loop — breadboard, PCB-ready design, 3D printed housing, and the app or dashboard that talks to it.",
+      "Firmware, sensor integration, wireless connectivity and the enclosure to put it in. I work through the whole loop, from breadboard to PCB-ready design to a 3D printed housing, plus the app or dashboard that talks to it.",
     tools: ["Arduino", "ESP32", "C++", "MQTT"],
   },
   {

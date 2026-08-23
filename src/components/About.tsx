@@ -6,9 +6,9 @@ import { SectionHeading } from "./SectionHeading";
 
 /* TODO: Pero to review the bio copy below — tone is drafted, not final. */
 const BIO = [
-  "I'm Pero, a builder based in Ghana. I started out taking things apart to see how they worked and never really stopped — that's how I ended up doing 3D modelling, brand design, embedded hardware and web development instead of picking one.",
-  "In practice that means I can model a product in Fusion 360, design the packaging it ships in, write the firmware that runs inside it, and build the site that sells it. Most of what I make is a mix of all four.",
-  "Right now I'm running FlashX and gheasy — real platforms with real users, not side projects. I like problems where the constraint is the interesting part: unreliable connections, no card payments, feature phones. Build for that and everything else is easy.",
+  "I'm Pero, a builder based in Ghana. I started out taking things apart to see how they worked and never really stopped. That's how I ended up doing 3D modelling, brand design, embedded hardware and web development instead of picking one of them.",
+  "In practice that means I can model a product in Fusion 360, design the packaging it ships in, write the firmware that runs inside it, and build the site that sells it. Most of what I make ends up being a mix of all four.",
+  "Right now I'm running FlashX and gheasy. Both are real platforms with real users on them, not side projects. I like problems where the constraint is the interesting part: unreliable connections, no card payments, feature phones. Build for that and the rest gets easier.",
 ];
 
 const STATS = [

@@ -58,7 +58,7 @@ export function GalleryLightbox({
         <motion.div
           role="dialog"
           aria-modal="true"
-          aria-label={`${piece.title} — full size`}
+          aria-label={`${piece.title}, full size`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

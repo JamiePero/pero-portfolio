@@ -46,7 +46,7 @@ export function Contact() {
     if (!FORM_ENDPOINT) {
       // Fallback: hand off to the visitor's mail client.
       const subject = encodeURIComponent(`Project enquiry from ${name || "your site"}`);
-      const mailBody = encodeURIComponent(`${body}\n\n— ${name}\n${email}`);
+      const mailBody = encodeURIComponent(`${body}\n\nFrom ${name}\n${email}`);
       window.location.href = `mailto:${site.email}?subject=${subject}&body=${mailBody}`;
       setStatus("sent");
       return;
@@ -74,7 +74,7 @@ export function Contact() {
         <SectionHeading
           eyebrow="06 / Contact"
           title="Got something you want built?"
-          lead="Freelance and client work across any of it — 3D, branding, hardware, web. Tell me what you're trying to make and I'll tell you straight whether I'm the right person for it."
+          lead="I take freelance and client work across any of it: 3D, branding, hardware, web. Tell me what you're trying to make and I'll tell you straight whether I'm the right person for it."
         />
 
         <div className="mt-14 grid gap-12 lg:grid-cols-[1fr_0.85fr] lg:gap-20">
@@ -113,7 +113,7 @@ export function Contact() {
                     className="text-sm text-accent"
                   >
                     {FORM_ENDPOINT
-                      ? "Sent — I'll get back to you."
+                      ? "Sent. I'll get back to you."
                       : "Your mail app should be opening."}
                   </motion.p>
                 ) : null}
@@ -132,7 +132,7 @@ export function Contact() {
               {!FORM_ENDPOINT ? (
                 <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted opacity-50">
                   {/* TODO: Pero to set FORM_ENDPOINT above (Formspree or similar). */}
-                  Form service — pending setup
+                  Form service pending setup
                 </p>
               ) : null}
             </form>

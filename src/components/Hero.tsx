@@ -193,7 +193,7 @@ export function Hero() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-70" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
             </span>
-            Based in {site.location} — open for work
+            Based in {site.location}, open for work
           </motion.p>
 
           {/* Kinetic name: letters rise out of a clipped mask, one after another */}
@@ -229,8 +229,8 @@ export function Hero() {
             transition={{ duration: 0.7, delay: 0.78, ease: EASE }}
             className="mt-8 max-w-[42ch] text-lg leading-relaxed text-muted sm:text-xl"
           >
-            Hardware, software, design — I don't pick a lane. I model it, brand it,
-            wire it up and ship it.
+            I work across hardware, software and design instead of picking one. I
+            model it, brand it, wire it up and ship it.
           </motion.p>
 
           <motion.div

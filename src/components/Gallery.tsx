@@ -15,7 +15,7 @@ export function Gallery() {
         <SectionHeading
           eyebrow="03 / Design"
           title="Renders, marks and packaging."
-          lead="The visual half of the work — 3D product modelling, identity systems, and packaging taken all the way through to production artwork."
+          lead="The visual half of the work. 3D product modelling, identity systems, and packaging taken all the way through to production artwork."
         />
 
         {/* 4C_Curls_22 gets a framed intro — it's a full brand build, not a one-off. */}
@@ -62,7 +62,7 @@ export function Gallery() {
         <Reveal delay={0.1}>
           <p className="mt-8 font-mono text-[11px] uppercase tracking-[0.14em] text-muted opacity-60">
             {/* TODO: Pero to drop real assets into /public/gallery/ and set `src` in src/data/gallery.ts */}
-            Gallery artwork — pending upload
+            Gallery artwork pending upload
           </p>
         </Reveal>
       </div>

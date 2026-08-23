@@ -65,9 +65,9 @@ export function PricingBuilder() {
       `Project type: ${selectedType.label}`,
       `Extras: ${selectedExtras.length ? selectedExtras.map((e) => e.label).join(", ") : "None"}`,
       `Timeline: ${selectedTimeline.label}`,
-      `Indicative range: ${formatMoney(quote[0])} – ${formatMoney(quote[1])}`,
+      `Indicative range: ${formatMoney(quote[0])} to ${formatMoney(quote[1])}`,
       "",
-      "Hey Pero — I used the builder on your site and got the above. Can we talk about it?",
+      "Hey Pero, I used the builder on your site and got the above. Can we talk about it?",
     ].join("\n");
 
     window.dispatchEvent(new CustomEvent<string>("pero:quote", { detail: summary }));
@@ -96,7 +96,7 @@ export function PricingBuilder() {
                 ⚠
               </span>
               <span>
-                PLACEHOLDER PRICING — the numbers below are examples only.
+                PLACEHOLDER PRICING. The numbers below are examples only.
                 <br />
                 TODO: Pero to provide real tiers in <code>src/data/pricing.ts</code>.
               </span>
@@ -121,7 +121,7 @@ export function PricingBuilder() {
                       {step === 0 ? (
                         <OptionStep
                           question="What kind of site do you need?"
-                          hint="Pick the closest fit — we can adjust on a call."
+                          hint="Pick the closest fit. We can adjust on a call."
                         >
                           {siteTypes.map((type) => (
                             <OptionCard
@@ -129,7 +129,7 @@ export function PricingBuilder() {
                               selected={typeId === type.id}
                               title={type.label}
                               description={type.description}
-                              meta={`${formatMoney(type.range[0])}–${formatMoney(type.range[1])} · ${type.weeks}`}
+                              meta={`${formatMoney(type.range[0])} to ${formatMoney(type.range[1])} · ${type.weeks}`}
                               onSelect={() => {
                                 setTypeId(type.id);
                                 // Choosing a type is unambiguous — move on for them.
@@ -152,7 +152,7 @@ export function PricingBuilder() {
                               multi
                               title={extra.label}
                               description={extra.description}
-                              meta={`+${formatMoney(extra.range[0])}–${formatMoney(extra.range[1])}`}
+                              meta={`+${formatMoney(extra.range[0])} to ${formatMoney(extra.range[1])}`}
                               onSelect={() =>
                                 setExtraIds((current) =>
                                   current.includes(extra.id)
@@ -248,7 +248,7 @@ function StartPanel({ onStart }: { onStart: () => void }) {
           Three questions. One number.
         </h3>
         <p className="mt-3 max-w-[46ch] text-sm leading-relaxed text-muted sm:text-base">
-          Tell me what you're building and I'll show you roughly what it costs — before either of
+          Tell me what you're building and I'll show you roughly what it costs, before either of
           us spends time on a call.
         </p>
       </div>
@@ -442,13 +442,13 @@ function ResultPanel({
           className="mt-3 font-display text-4xl font-bold leading-none tracking-tight sm:text-5xl"
         >
           {formatMoney(quote[0])}
-          <span className="text-muted"> – </span>
+          <span className="text-muted"> to </span>
           {formatMoney(quote[1])}
         </motion.p>
 
         <p className="mt-4 max-w-[38ch] text-sm leading-relaxed text-muted">
           A {typeLabel.toLowerCase()} on a {timelineLabel.toLowerCase()} schedule, roughly{" "}
-          {weeks}. The exact number depends on scope — that's what the call is for.
+          {weeks}. The exact number depends on scope, which is what the call is for.
         </p>
 
         <div className="mt-7 flex flex-wrap gap-3">

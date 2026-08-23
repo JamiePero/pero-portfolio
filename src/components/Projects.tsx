@@ -9,7 +9,7 @@ export function Projects() {
         <SectionHeading
           eyebrow="02 / Selected work"
           title="Things I built and actually shipped."
-          lead="Three platforms, three different problems. Each one went from an idea to something people use — hardware, payments, design systems and all."
+          lead="Three platforms, three different problems. Each one went from an idea to something people actually use, hardware and payments and design systems and all."
         />
 
         <div className="mt-16 md:mt-20">

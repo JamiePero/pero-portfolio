@@ -136,7 +136,7 @@ export function ProjectCaseStudy({ project }: { project: Project }) {
             // TODO: Pero to supply a live URL — this note disappears once liveUrl is set.
             <Reveal delay={0.14}>
               <p className="mt-8 font-mono text-[11px] uppercase tracking-[0.14em] text-muted opacity-60">
-                Live link — pending
+                Live link pending
               </p>
             </Reveal>
           )}

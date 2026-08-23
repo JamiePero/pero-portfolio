@@ -21,7 +21,7 @@ export const curlsCaseStudy = {
   title: "4C_Curls_22",
   kicker: "Brand build",
   blurb:
-    "Designed and built an entire hair care brand from the ground up — 3D modelled the bottles, designed the labels, and took the packaging through to production-ready artwork.",
+    "I built an entire hair care brand from the ground up. I modelled the bottles in 3D, designed the labels, and took the packaging all the way through to production-ready artwork.",
   tools: ["Fusion 360", "Blender", "Canva", "Illustrator"],
 };
 
@@ -30,7 +30,7 @@ export const galleryPieces: GalleryPiece[] = [
   // `src` on each piece — placeholder frames render until then.
   {
     id: "curls-bottle-render",
-    title: "4C_Curls_22 — Bottle render",
+    title: "4C_Curls_22 bottle render",
     caption: "Product bottle modelled in Fusion 360, rendered in Blender",
     tools: ["Fusion 360", "Blender"],
     alt: "3D render of the 4C_Curls_22 hair care bottle",
@@ -39,7 +39,7 @@ export const galleryPieces: GalleryPiece[] = [
   },
   {
     id: "curls-label",
-    title: "4C_Curls_22 — Label design",
+    title: "4C_Curls_22 label design",
     caption: "Label artwork and typographic system for the product line",
     tools: ["Illustrator", "Canva"],
     alt: "4C_Curls_22 product label design",
@@ -47,15 +47,15 @@ export const galleryPieces: GalleryPiece[] = [
   },
   {
     id: "curls-packaging",
-    title: "4C_Curls_22 — Packaging",
-    caption: "Full packaging build — carton, sleeve and production artwork",
+    title: "4C_Curls_22 packaging",
+    caption: "The full packaging build: carton, sleeve and production artwork",
     tools: ["Illustrator", "Blender"],
     alt: "4C_Curls_22 packaging design",
     aspect: "landscape",
   },
   {
     id: "curls-logo",
-    title: "4C_Curls_22 — Identity",
+    title: "4C_Curls_22 identity",
     caption: "Wordmark, monogram and the brand's colour system",
     tools: ["Illustrator"],
     alt: "4C_Curls_22 logo and identity system",

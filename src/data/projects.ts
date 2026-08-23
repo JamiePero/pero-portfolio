@@ -29,18 +29,18 @@ export const projects: Project[] = [
     index: "01",
     name: "FlashX",
     tagline: "Multi-tenant Wi-Fi hotspot SaaS + data reseller platform",
-    year: "2024 — present",
+    year: "Since 2024",
     status: "Live",
     problem:
-      "Reliable internet in underserved parts of Ghana is either unavailable or priced for people who aren't there. Small operators who want to run a hotspot have the hardware but no billing layer, no way to take mobile money, and no dashboard telling them what's actually happening on their network.",
+      "Reliable internet in underserved parts of Ghana is either unavailable or priced for people who aren't there. Small operators who want to run a hotspot have the hardware, but no billing layer, no way to take mobile money, and no dashboard telling them what's actually happening on their network.",
     solution:
-      "FlashX is the missing layer. Operators plug in a MikroTik router, connect their tenant account, and start selling access in minutes — vouchers, time-based bundles, and data packages, paid for with the payment rails people in Ghana actually use. I built the whole stack: the captive portal, the tenant isolation model, the payment reconciliation, and the USSD flow for customers with no smartphone.",
+      "FlashX fills that gap. An operator plugs in a MikroTik router, connects their tenant account, and can be selling access within minutes. They sell vouchers, time-based bundles or data packages, and take payment on the rails people in Ghana actually use. I built the whole stack: the captive portal, the tenant isolation model, the payment reconciliation, and the USSD flow for customers who don't have a smartphone.",
     highlights: [
-      "Multi-tenant architecture — every operator gets isolated data, pricing and branding",
-      "Paystack + Mobile Money checkout, with automatic voucher provisioning on payment confirmation",
+      "Multi-tenant architecture, so every operator gets isolated data, pricing and branding",
+      "Paystack and Mobile Money checkout, with vouchers provisioned automatically once payment confirms",
       "USSD fallback so feature-phone users can buy access without a data connection",
       "MikroTik RouterOS integration for live session control and bandwidth policy",
-      "Operator dashboard: revenue, active sessions, and per-package performance",
+      "An operator dashboard covering revenue, active sessions and per-package performance",
     ],
     tech: [
       "MikroTik RouterOS",
@@ -62,17 +62,17 @@ export const projects: Project[] = [
       {
         src: "/work/flashx/mobile-app.webp",
         alt: "FlashX mobile app interface showing plan status and quick actions",
-        caption: "The customer app — plan status, live usage and quick actions",
+        caption: "The customer app, showing plan status, live usage and quick actions",
       },
       {
         src: "/work/flashx/admin-overview.webp",
         alt: "FlashX admin dashboard showing revenue and user analytics",
-        caption: "Admin workspace — revenue, users and active plans at a glance",
+        caption: "The admin workspace, with revenue, users and active plans on one screen",
       },
       {
         src: "/work/flashx/admin-analytics.webp",
         alt: "FlashX admin analytics showing revenue trend, plan performance and sales channel breakdown",
-        caption: "Behind the scenes — 14-day revenue trend, plan performance and channel mix",
+        caption: "Behind the scenes: 14-day revenue trend, plan performance and channel mix",
       },
     ],
   },
@@ -81,16 +81,16 @@ export const projects: Project[] = [
     index: "02",
     name: "gheasy",
     tagline: "No-login data bundles, an agent network, and a games suite",
-    year: "2024 — present",
+    year: "Since 2024",
     status: "Live",
     problem:
-      "Buying a data bundle online in Ghana usually means an account, a password, and four screens before you get to pay. Most people abandon somewhere in the middle. Meanwhile resellers — the people actually moving volume — are running their business out of WhatsApp threads and notebooks.",
+      "Buying a data bundle online in Ghana usually means an account, a password, and four screens before you get to pay. Most people give up somewhere in the middle. And the resellers, who are the ones actually moving volume, run their whole business out of WhatsApp threads and notebooks.",
     solution:
-      "gheasy strips the purchase down to phone number, bundle, pay. No login, no account, no friction. On top of that sits an agent and reseller ecosystem with its own margins, wallets and order tracking, plus Easy Games — a gamified suite that turns repeat purchases into something people actually come back for.",
+      "gheasy cuts the purchase down to three things: phone number, bundle, pay. There's no account to make and nothing to log into. Sitting on top of that is an agent and reseller tier with its own margins, wallets and order tracking, plus Easy Games, a set of small games that give people a reason to come back between top-ups.",
     highlights: [
-      "Zero-login checkout — a bundle is three taps from landing on the page",
-      "Agent + reseller tier with wallet balances, custom margins and order history",
-      "Easy Games: gamified layer driving repeat purchases and retention",
+      "Zero-login checkout, so a bundle is three taps from landing on the page",
+      "Agent and reseller tier with wallet balances, custom margins and order history",
+      "Easy Games, a light game layer that brings people back between purchases",
       "Order pipeline with real-time status, built to survive flaky mobile connections",
       "Admin tooling for pricing, reconciliation and agent management",
     ],
@@ -104,9 +104,9 @@ export const projects: Project[] = [
     liveUrl: undefined,
     images: [
       // TODO: Pero to provide real screenshots — /public/work/gheasy/
-      { alt: "gheasy bundle purchase screen", caption: "No-login checkout — number, bundle, pay" },
-      { alt: "gheasy agent dashboard", caption: "Agent dashboard — wallet and order pipeline" },
-      { alt: "Easy Games suite", caption: "Easy Games — the gamified retention layer" },
+      { alt: "gheasy bundle purchase screen", caption: "No-login checkout: number, bundle, pay" },
+      { alt: "gheasy agent dashboard", caption: "The agent dashboard, with wallet and order pipeline" },
+      { alt: "Easy Games suite", caption: "Easy Games, the layer that brings people back" },
     ],
   },
   {
@@ -117,18 +117,18 @@ export const projects: Project[] = [
     year: "2025",
     status: "In build",
     problem:
-      "Waste collection runs on guesswork — trucks drive fixed routes past empty bins and miss full ones, residents have no idea when pickup is coming, and the people coordinating it are working from phone calls and paper.",
+      "Waste collection mostly runs on guesswork. Trucks drive fixed routes past empty bins and miss the full ones, residents have no idea when pickup is coming, and whoever is coordinating it is working off phone calls and paper.",
     solution:
-      "Jexi is a mobile app that puts collection, tracking and coordination in one place. I designed the full product in Figma — flows, component library, the lot — then handed the system off to Lovable.dev to build against, which took it from static frames to a working app without losing the design intent.",
+      "Jexi is a mobile app that puts collection, tracking and coordination in one place. I designed the full product in Figma first, including the flows and the component library, then handed that system to Lovable.dev to build against. It went from static frames to a working app without losing the design intent along the way.",
     highlights: [
       // TODO: Pero to provide the three module names + what each one does, then
       // expand the "three modules" line below into one row per module.
       // Kept deliberately neutral rather than as visible TODO text — these
       // render as body copy on the live site.
-      "Full product designed in Figma first — flows, component library, states",
+      "Full product designed in Figma first, covering flows, component library and states",
       "Structured as three modules",
       "Handed to Lovable.dev to build against, going from static frames to a working app without losing the design intent",
-      "Mobile-first — built for the people doing the collecting, not for a desk",
+      "Mobile-first, because it's built for the people doing the collecting rather than for a desk",
     ],
     tech: ["Figma", "Lovable.dev", "Design systems", "Mobile UX"],
     impact: [
@@ -139,9 +139,9 @@ export const projects: Project[] = [
     liveUrl: undefined,
     images: [
       // TODO: Pero to provide Figma frames / app screenshots — /public/work/jexi/
-      { alt: "Jexi app home screen", caption: "Home — collection schedule at a glance" },
+      { alt: "Jexi app home screen", caption: "Home, with the collection schedule up front" },
       { alt: "Jexi module screens", caption: "The three modules" },
-      { alt: "Jexi Figma design system", caption: "Figma design system handed to Lovable.dev" },
+      { alt: "Jexi Figma design system", caption: "The Figma design system handed to Lovable.dev" },
     ],
   },
 ];
