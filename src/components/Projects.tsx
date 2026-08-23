@@ -1,6 +1,7 @@
 import { projects } from "../data/projects";
 import { ProjectCaseStudy } from "./ProjectCaseStudy";
 import { SectionHeading } from "./SectionHeading";
+import { SmartBinSection } from "./SmartBinSection";
 
 export function Projects() {
   return (
@@ -14,7 +15,14 @@ export function Projects() {
 
         <div className="mt-16 md:mt-20">
           {projects.map((project) => (
-            <ProjectCaseStudy key={project.id} project={project} />
+            <ProjectCaseStudy
+              key={project.id}
+              project={project}
+              // Jexi is the only one with a model to show, so it's the only one
+              // that gets the viewer. Everything inside it is gated and lazy,
+              // so this costs nothing for visitors who never reach it.
+              extra={project.id === "jexi" ? <SmartBinSection /> : undefined}
+            />
           ))}
         </div>
       </div>

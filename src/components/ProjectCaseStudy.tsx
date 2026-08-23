@@ -1,5 +1,5 @@
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useRef, type ReactNode } from "react";
 import type { Project } from "../data/projects";
 import { Placeholder } from "./Placeholder";
 import { Reveal, RevealWords } from "./Reveal";
@@ -11,7 +11,14 @@ import { Reveal, RevealWords } from "./Reveal";
  * sticky treatment from the brief. On mobile it collapses to a single column,
  * because pinning inside a phone viewport just eats the screen.
  */
-export function ProjectCaseStudy({ project }: { project: Project }) {
+export function ProjectCaseStudy({
+  project,
+  extra,
+}: {
+  project: Project;
+  /** Rendered at the foot of the visuals column. See the note at its usage. */
+  extra?: ReactNode;
+}) {
   const ref = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
 
@@ -165,6 +172,11 @@ export function ProjectCaseStudy({ project }: { project: Project }) {
               </figcaption>
             </ParallaxFrame>
           ))}
+
+          {/* Optional extra panel below the visuals. Jexi passes the interactive
+              Smart Bin viewer here; the other case studies pass nothing, so this
+              component stays generic. */}
+          {extra}
         </div>
       </div>
     </article>

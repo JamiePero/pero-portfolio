@@ -1,6 +1,7 @@
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { heroRoles, site } from "../data/site";
+import { canRenderHeroGlass } from "@/lib/capabilities";
 import { scrollToSection } from "../hooks/useSmoothScroll";
 import { MagneticButton } from "./MagneticButton";
 import { ScrambleText } from "./ScrambleText";
@@ -14,50 +15,12 @@ const NAME = "Pero".split("");
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 /**
- * Decides whether this device should attempt the real-time glass blob.
- *
- * A transmission material renders the scene into an offscreen buffer every
- * frame, so it's genuinely expensive — this refuses on anything that looks
- * likely to struggle rather than shipping a stuttering hero.
+ * Kept as a thin wrapper so the call site below reads the same as before. The
+ * rules now live in src/lib/capabilities.ts, shared with the Smart Bin viewer
+ * in the Jexi case study, so the two can't drift apart.
  */
 function canRenderGlass(): boolean {
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
-
-  // Coarse pointer on a small screen: phone. The CSS fallback looks close
-  // enough at that size and costs nothing.
-  const isPhone =
-    window.matchMedia("(pointer: coarse)").matches && window.innerWidth < 900;
-  if (isPhone) return false;
-
-  const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
-  if (typeof memory === "number" && memory < 4) return false;
-  if (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4) return false;
-
-  // Don't spend ~240 kB of someone's data on decoration. A large share of this
-  // site's audience is on mobile in Ghana, where connections are often slower
-  // and metered — those visitors get the CSS stand-in, which costs nothing and
-  // carries the same character. Relax the effectiveType list if you'd rather
-  // more people got the 3D.
-  const connection = (
-    navigator as Navigator & {
-      connection?: { saveData?: boolean; effectiveType?: string };
-    }
-  ).connection;
-  if (connection) {
-    if (connection.saveData) return false;
-    if (["slow-2g", "2g", "3g"].includes(connection.effectiveType ?? "")) return false;
-  }
-
-  // Confirm WebGL actually works before loading ~200 kB of renderer.
-  try {
-    const canvas = document.createElement("canvas");
-    const gl =
-      canvas.getContext("webgl2") ??
-      (canvas.getContext("webgl") as WebGLRenderingContext | null);
-    return Boolean(gl);
-  } catch {
-    return false;
-  }
+  return canRenderHeroGlass();
 }
 
 export function Hero() {
