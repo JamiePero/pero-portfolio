@@ -154,15 +154,16 @@ export const projects: Project[] = [
         caption: "Three colourways, modelled in Fusion 360",
         aspect: "landscape",
       },
-      // TODO: Pero to add in-context.png and exploded-parts.png to
-      // public/work/jexi/, then run `npm run optimize:images` and point these at
-      // the .webp pair it produces. They render as pending frames until then.
       {
+        src: "/work/jexi/in-context.webp",
+        src2x: "/work/jexi/in-context@2x.webp",
         alt: "Jexi smart bin styled in a home setting",
         caption: "In context, where it actually has to sit",
         aspect: "wide",
       },
       {
+        src: "/work/jexi/exploded-parts.webp",
+        src2x: "/work/jexi/exploded-parts@2x.webp",
         alt: "Exploded view of the Jexi smart bin showing lid, sensor mechanism and body components",
         caption: "Exploded: lid, sensor mechanism and body",
         aspect: "wide",
