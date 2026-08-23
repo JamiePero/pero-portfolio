@@ -24,7 +24,12 @@ export function hasSlowConnection(): boolean {
   ).connection;
   if (!connection) return false;
   if (connection.saveData) return true;
-  return ["slow-2g", "2g", "3g"].includes(connection.effectiveType ?? "");
+  // Note "3g" is deliberately not in this list. effectiveType is a heuristic
+  // derived from observed round-trip time, not the actual radio technology, and
+  // Chrome reports "3g" routinely on ordinary broadband with middling latency —
+  // which was blocking the 3D on machines perfectly capable of running it.
+  // Genuinely slow connections still report 2g or slow-2g.
+  return ["slow-2g", "2g"].includes(connection.effectiveType ?? "");
 }
 
 /** Low RAM or few cores. Best-effort: both hints are absent in some browsers. */
@@ -73,4 +78,43 @@ export function canRenderModelViewer(): boolean {
   if (isLowPoweredDevice()) return false;
   if (hasSlowConnection()) return false;
   return hasWebGL();
+}
+
+/**
+ * Why a given visitor did or didn't get the 3D, readable from the console.
+ *
+ * These gates depend on the visitor's own hardware, connection and OS settings,
+ * so a fallback can't be reproduced or diagnosed from anywhere else. Run
+ * `__peroCaps()` in the console on the live site to see which check failed.
+ */
+export function capabilityReport() {
+  const connection = (
+    navigator as Navigator & {
+      connection?: { saveData?: boolean; effectiveType?: string };
+    }
+  ).connection;
+
+  return {
+    heroGlass: canRenderHeroGlass(),
+    modelViewer: canRenderModelViewer(),
+    blockedBy: {
+      reducedMotion: prefersReducedMotion(),
+      phone: window.matchMedia("(pointer: coarse)").matches && window.innerWidth < 900,
+      lowPowered: isLowPoweredDevice(),
+      slowConnection: hasSlowConnection(),
+      noWebGL: !hasWebGL(),
+    },
+    raw: {
+      deviceMemory: (navigator as Navigator & { deviceMemory?: number }).deviceMemory,
+      hardwareConcurrency: navigator.hardwareConcurrency,
+      effectiveType: connection?.effectiveType,
+      saveData: connection?.saveData,
+      viewport: `${window.innerWidth}x${window.innerHeight}`,
+      pointerCoarse: window.matchMedia("(pointer: coarse)").matches,
+    },
+  };
+}
+
+if (typeof window !== "undefined") {
+  (window as unknown as Record<string, unknown>).__peroCaps = capabilityReport;
 }

@@ -61,7 +61,12 @@ export function ScrambleText({
             output += char;
             settled++;
           } else if (tick >= start) {
-            output += GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+            // Only scramble positions the target actually reaches. Going from a
+            // longer word to a shorter one, the tail positions have nothing to
+            // resolve to, and glyphing them parks visible junk past the end of
+            // the word — "3D Modeler" rendering as "3D ModelerG" for a good ten
+            // frames after it otherwise looks finished.
+            output += char ? GLYPHS[Math.floor(Math.random() * GLYPHS.length)] : "";
           } else {
             output += from[i] ?? "";
           }
