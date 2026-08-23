@@ -33,6 +33,21 @@ function canRenderGlass(): boolean {
   if (typeof memory === "number" && memory < 4) return false;
   if (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4) return false;
 
+  // Don't spend ~240 kB of someone's data on decoration. A large share of this
+  // site's audience is on mobile in Ghana, where connections are often slower
+  // and metered — those visitors get the CSS stand-in, which costs nothing and
+  // carries the same character. Relax the effectiveType list if you'd rather
+  // more people got the 3D.
+  const connection = (
+    navigator as Navigator & {
+      connection?: { saveData?: boolean; effectiveType?: string };
+    }
+  ).connection;
+  if (connection) {
+    if (connection.saveData) return false;
+    if (["slow-2g", "2g", "3g"].includes(connection.effectiveType ?? "")) return false;
+  }
+
   // Confirm WebGL actually works before loading ~200 kB of renderer.
   try {
     const canvas = document.createElement("canvas");
@@ -49,6 +64,18 @@ export function Hero() {
   const ref = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
   const [useGlass, setUseGlass] = useState(false);
+  /** The 3D scene has painted — begin the cross-fade. */
+  const [ribbonReady, setRibbonReady] = useState(false);
+  /** Cross-fade finished; the CSS stand-in can leave the tree. */
+  const [ribbonPainted, setRibbonPainted] = useState(false);
+
+  // Unmount the stand-in only after the fade completes. Leaving a heavily
+  // blurred element at opacity 0 still costs compositing work every frame.
+  useEffect(() => {
+    if (!ribbonReady) return;
+    const handle = window.setTimeout(() => setRibbonPainted(true), 700);
+    return () => window.clearTimeout(handle);
+  }, [ribbonReady]);
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -110,14 +137,34 @@ export function Hero() {
         style={reduced ? undefined : { y: blobY }}
         className="pointer-events-none absolute inset-y-0 right-0 -z-10 w-full scale-125 opacity-80 sm:scale-110 sm:opacity-90 lg:left-auto lg:w-[56%] lg:scale-100 lg:opacity-100"
       >
-        <div className="h-full w-full">
+        {/* The CSS stand-in paints immediately and is never swapped out by
+            Suspense — it stays mounted underneath and cross-fades away only
+            once the 3D scene reports real pixels on screen. Previously the
+            Suspense boundary swapped fallback for scene in a single frame,
+            which popped; and on a slow connection there was a long stretch
+            with the visual effectively absent. */}
+        <div className="relative h-full w-full">
+          {!ribbonPainted ? (
+            <div
+              className={`absolute inset-0 transition-opacity duration-[600ms] ease-out ${
+                ribbonReady ? "opacity-0" : "opacity-100"
+              }`}
+            >
+              <HeroBlobFallback animated={!reduced && !ribbonReady} />
+            </div>
+          ) : null}
+
           {useGlass ? (
-            <Suspense fallback={<HeroBlobFallback animated={!reduced} />}>
-              <HeroRibbon />
+            <Suspense fallback={null}>
+              <div
+                className={`absolute inset-0 transition-opacity duration-[600ms] ease-out ${
+                  ribbonReady ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <HeroRibbon onReady={() => setRibbonReady(true)} />
+              </div>
             </Suspense>
-          ) : (
-            <HeroBlobFallback animated={!reduced} />
-          )}
+          ) : null}
         </div>
       </motion.div>
 

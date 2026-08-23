@@ -1,5 +1,5 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Lightformer, MeshTransmissionMaterial } from "@react-three/drei";
+import { MeshTransmissionMaterial } from "@react-three/drei";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
@@ -278,16 +278,13 @@ function Ribbon({ light }: { light: boolean }) {
   return (
     <mesh ref={meshRef} geometry={geometry} scale={1.28}>
       <MeshTransmissionMaterial
-        backside
-        backsideThickness={light ? 0.7 : 0.55}
-        // Transmission re-renders the scene into an offscreen buffer, and
-        // `backside` makes that two passes. At 512/6 that was overrunning the
-        // frame budget on integrated graphics and showing up as stutter. 256/4
-        // is visually near-identical here because the buffer is only ever
-        // sampled through a refracting surface, never seen directly.
+        // `backside` dropped. It refracted through both surfaces of the sheet,
+        // but it doubled the transmission passes for a difference that's hard to
+        // see on a ribbon this thin (0.076 units) — unlike on a solid volume,
+        // where it earns its cost. Purely a per-frame GPU saving; it has no
+        // effect on chunk size.
         samples={4}
         resolution={256}
-        backsideResolution={256}
         transmission={1}
         // Light mode needs *thicker* glass with a shorter attenuation distance,
         // not thinner. Near-clear glass on a near-white page is a ghost; the
@@ -388,33 +385,103 @@ function GlowField({ light }: { light: boolean }) {
   );
 }
 
+type LightSpec = {
+  form: "circle" | "ring" | "rect";
+  intensity: number;
+  color: string;
+  position: [number, number, number];
+  scale: number;
+  rotation?: [number, number, number];
+};
+
 /**
- * Coloured area lights the glass picks up as highlights. Built from
- * Lightformers rather than an HDR so the scene needs no extra network request.
+ * The coloured area lights the glass picks up as highlights.
+ *
+ * This used to be drei's <Environment> with <Lightformer> children. Same result,
+ * but drei's Environment imports RGBELoader, EXRLoader and GroundProjectedEnv
+ * unconditionally — and none of them were reachable here, because the rig is
+ * built from meshes rather than loaded from an HDR. EXRLoader alone carries a
+ * pile of decompression code. Building the environment by hand drops all of it
+ * from the chunk; PMREMGenerator is three core and was already bundled.
  */
+function useProceduralEnv(lights: LightSpec[]) {
+  const gl = useThree((state) => state.gl);
+  const scene = useThree((state) => state.scene);
+
+  useEffect(() => {
+    const rig = new THREE.Scene();
+    // A near-black surround so the glass reads against darkness, matching what
+    // Environment produced with no background set.
+    rig.background = new THREE.Color("#05030a");
+
+    for (const light of lights) {
+      const geometry =
+        light.form === "ring"
+          ? new THREE.RingGeometry(0.35, 1, 32)
+          : light.form === "circle"
+            ? new THREE.CircleGeometry(1, 32)
+            : new THREE.PlaneGeometry(1, 1);
+
+      const material = new THREE.MeshBasicMaterial({
+        color: new THREE.Color(light.color).multiplyScalar(light.intensity),
+        side: THREE.DoubleSide,
+        toneMapped: false,
+      });
+
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(...light.position);
+      mesh.scale.setScalar(light.scale);
+      // Lightformers aim at the origin unless given an explicit rotation.
+      if (light.rotation) mesh.rotation.set(...light.rotation);
+      else mesh.lookAt(0, 0, 0);
+      rig.add(mesh);
+    }
+
+    const pmrem = new THREE.PMREMGenerator(gl);
+    const target = pmrem.fromScene(rig, 0.04);
+    scene.environment = target.texture;
+    pmrem.dispose();
+
+    rig.traverse((object) => {
+      if (object instanceof THREE.Mesh) {
+        object.geometry.dispose();
+        (object.material as THREE.Material).dispose();
+      }
+    });
+
+    return () => {
+      scene.environment = null;
+      target.dispose();
+    };
+  }, [gl, scene, lights]);
+}
+
 function Rig({ light }: { light: boolean }) {
   // The coloured lights stay strong in light mode — they're what gives the
   // glass its hue against a near-white page. It's the white fill that has to
   // come down; previously it was set *brighter* in light mode, which bleached
   // out the very highlights it was meant to shape.
-  const k = light ? 0.85 : 1;
-  return (
-    <Environment resolution={256}>
-      <Lightformer form="circle" intensity={6 * k} color="#c98bff" position={[-4, 2, 4]} scale={5} />
-      <Lightformer form="circle" intensity={5 * k} color="#ff5ca8" position={[4, -1.5, 3]} scale={4} />
-      {/* Warm and cool rim accents — the orange and cyan glints in the reference */}
-      <Lightformer form="ring" intensity={4.5 * k} color="#ff9a3c" position={[3.2, 3.2, -2]} scale={3} />
-      <Lightformer form="ring" intensity={4 * k} color="#3fd0e8" position={[-3.4, -2.6, -1.5]} scale={3} />
-      <Lightformer
-        form="rect"
-        intensity={light ? 0.9 : 1.6}
-        color="#ffffff"
-        position={[0, 5, 1]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={8}
-      />
-    </Environment>
-  );
+  const lights = useMemo<LightSpec[]>(() => {
+    const k = light ? 0.85 : 1;
+    return [
+      { form: "circle", intensity: 6 * k, color: "#c98bff", position: [-4, 2, 4], scale: 5 },
+      { form: "circle", intensity: 5 * k, color: "#ff5ca8", position: [4, -1.5, 3], scale: 4 },
+      // Warm and cool rim accents — the orange and cyan glints in the reference
+      { form: "ring", intensity: 4.5 * k, color: "#ff9a3c", position: [3.2, 3.2, -2], scale: 3 },
+      { form: "ring", intensity: 4 * k, color: "#3fd0e8", position: [-3.4, -2.6, -1.5], scale: 3 },
+      {
+        form: "rect",
+        intensity: light ? 0.9 : 1.6,
+        color: "#ffffff",
+        position: [0, 5, 1],
+        rotation: [Math.PI / 2, 0, 0],
+        scale: 8,
+      },
+    ];
+  }, [light]);
+
+  useProceduralEnv(lights);
+  return null;
 }
 
 /**
@@ -452,6 +519,29 @@ function FrameLimiter({ fps, active }: { fps: number; active: boolean }) {
   return null;
 }
 
+/**
+ * Fires once the scene has actually painted, not merely mounted.
+ *
+ * Hero uses this to cross-fade from the CSS stand-in, so it has to mean
+ * "there are real pixels on screen". useFrame runs *before* the render, so it
+ * waits for the second tick — by which point the first frame is on screen and
+ * the transmission material's shader compile (the slow part of startup) is done.
+ */
+function FirstFrameSignal({ onReady }: { onReady?: () => void }) {
+  const frames = useRef(0);
+  const fired = useRef(false);
+
+  useFrame(() => {
+    if (fired.current) return;
+    frames.current += 1;
+    if (frames.current < 2) return;
+    fired.current = true;
+    onReady?.();
+  });
+
+  return null;
+}
+
 /** Tracks the site theme without threading a prop through the lazy boundary. */
 function useIsLight() {
   const [light, setLight] = useState(
@@ -465,7 +555,7 @@ function useIsLight() {
   return light;
 }
 
-export default function HeroRibbon() {
+export default function HeroRibbon({ onReady }: { onReady?: () => void }) {
   const light = useIsLight();
   const [visible, setVisible] = useState(true);
   const hostRef = useRef<HTMLDivElement>(null);
@@ -496,6 +586,7 @@ export default function HeroRibbon() {
         style={{ background: "transparent" }}
       >
         <FrameLimiter fps={30} active={visible} />
+        <FirstFrameSignal onReady={onReady} />
         {/* The glows must exist in the scene for the ribbon's transmission pass
             to have anything to refract. */}
         <GlowField light={light} />

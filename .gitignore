@@ -32,3 +32,5 @@ dist-ssr
 # Stray npm --prefix artefact (unexpanded ~)
 '~'/
 '~/.npm-global'/
+
+.env*
