@@ -1,44 +1,84 @@
-import { motion, useMotionValue, useSpring } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
- * Custom cursor: a small dot that tracks exactly, plus a lagging ring that
- * expands over anything marked `data-cursor="hover"` (and over native
- * interactive elements).
+ * Custom cursor: a dot that tracks exactly, plus a lagging ring that expands
+ * over anything interactive.
  *
- * Only mounts on devices with a fine pointer and motion enabled — everywhere
- * else the native cursor is left alone.
+ * Deliberately free of React state and of any JS animation loop.
+ *
+ * The earlier version drove both elements through Framer Motion — a motion
+ * value for the dot and a spring for the ring. Both are flushed inside Framer's
+ * requestAnimationFrame loop, which the hero's transmission material starves:
+ * the 3D scene re-renders itself into an offscreen buffer every frame, the rAF
+ * queue runs late, and the cursor visibly trails the pointer over the hero
+ * while tracking fine everywhere else.
+ *
+ * So: the dot's transform is written synchronously in the pointermove handler,
+ * and the ring gets the same transform with a CSS transition. Transitions are
+ * driven by the compositor, so the ring keeps its smooth trail without
+ * depending on a main-thread frame loop at all.
+ *
+ * Only mounts on devices with a fine pointer and motion enabled.
  */
 export function Cursor() {
   const [enabled, setEnabled] = useState(false);
-  const [hovering, setHovering] = useState(false);
-  const [visible, setVisible] = useState(false);
-
-  const x = useMotionValue(-100);
-  const y = useMotionValue(-100);
-  const ringX = useSpring(x, { stiffness: 380, damping: 30, mass: 0.5 });
-  const ringY = useSpring(y, { stiffness: 380, damping: 30, mass: 0.5 });
+  const dotRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const finePointer = window.matchMedia("(pointer: fine)").matches;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!finePointer || reduced) return;
+    if (finePointer && !reduced) setEnabled(true);
+  }, []);
 
-    setEnabled(true);
+  useEffect(() => {
+    if (!enabled) return;
+    const dot = dotRef.current;
+    const ring = ringRef.current;
+    if (!dot || !ring) return;
+
     document.body.dataset.customCursor = "true";
 
-    const onMove = (event: PointerEvent) => {
-      x.set(event.clientX);
-      y.set(event.clientY);
-      setVisible(true);
+    let visible = false;
+    let hovering = false;
+    // Cached so the ancestor walk below can be skipped while the pointer stays
+    // within one element.
+    let lastTarget: Element | null = null;
 
+    const HOVER_SELECTOR = 'a, button, input, textarea, select, [data-cursor="hover"]';
+
+    const onMove = (event: PointerEvent) => {
+      const transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0) translate(-50%, -50%)`;
+      dot.style.transform = transform;
+      ring.style.transform = transform;
+
+      if (!visible) {
+        visible = true;
+        dot.style.opacity = "1";
+        ring.style.opacity = "";
+      }
+
+      // closest() walks the ancestor chain against a compound selector. Running
+      // it on every pointermove was pure waste — the pointer spends most of its
+      // time inside the same element, so only re-test when the target changes.
       const target = event.target as Element | null;
-      setHovering(
-        Boolean(target?.closest('a, button, input, textarea, select, [data-cursor="hover"]')),
-      );
+      if (target !== lastTarget) {
+        lastTarget = target;
+        const next = Boolean(target?.closest(HOVER_SELECTOR));
+        if (next !== hovering) {
+          hovering = next;
+          const value = next ? "true" : "false";
+          dot.dataset.hover = value;
+          ring.dataset.hover = value;
+        }
+      }
     };
 
-    const onLeave = () => setVisible(false);
+    const onLeave = () => {
+      visible = false;
+      dot.style.opacity = "0";
+      ring.style.opacity = "0";
+    };
 
     window.addEventListener("pointermove", onMove, { passive: true });
     document.addEventListener("pointerleave", onLeave);
@@ -48,28 +88,26 @@ export function Cursor() {
       document.removeEventListener("pointerleave", onLeave);
       delete document.body.dataset.customCursor;
     };
-  }, [x, y]);
+  }, [enabled]);
 
   if (!enabled) return null;
 
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 z-[100]">
-      <motion.div
-        className="absolute h-1.5 w-1.5 rounded-full bg-accent"
-        style={{ x, y, translateX: "-50%", translateY: "-50%" }}
-        animate={{ opacity: visible ? 1 : 0, scale: hovering ? 0 : 1 }}
-        transition={{ duration: 0.18 }}
+      {/* Exact tracking: no transition on transform, so it pins to the pointer. */}
+      <div
+        ref={dotRef}
+        data-hover="false"
+        style={{ transform: "translate3d(-100px, -100px, 0)", opacity: 0 }}
+        className="absolute left-0 top-0 h-1.5 w-1.5 rounded-full bg-accent transition-[opacity,scale] duration-200 data-[hover=true]:scale-0"
       />
-      <motion.div
-        className="absolute rounded-full border border-accent"
-        style={{ x: ringX, y: ringY, translateX: "-50%", translateY: "-50%" }}
-        animate={{
-          width: hovering ? 44 : 26,
-          height: hovering ? 44 : 26,
-          opacity: visible ? (hovering ? 1 : 0.45) : 0,
-          backgroundColor: hovering ? "var(--glow)" : "transparent",
-        }}
-        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+      {/* The trail. transform is transitioned, so the compositor animates it and
+          main-thread load can't make it stutter. */}
+      <div
+        ref={ringRef}
+        data-hover="false"
+        style={{ transform: "translate3d(-100px, -100px, 0)", opacity: 0 }}
+        className="absolute left-0 top-0 h-[26px] w-[26px] rounded-full border border-accent opacity-45 transition-[transform,width,height,opacity,background-color] duration-200 ease-out data-[hover=true]:h-11 data-[hover=true]:w-11 data-[hover=true]:bg-[var(--glow)] data-[hover=true]:opacity-100"
       />
     </div>
   );

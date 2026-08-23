@@ -1,4 +1,4 @@
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, MeshTransmissionMaterial } from "@react-three/drei";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
@@ -417,6 +417,41 @@ function Rig({ light }: { light: boolean }) {
   );
 }
 
+/**
+ * Caps the scene to a fixed frame rate.
+ *
+ * The canvas runs in `demand` mode, so R3F only renders when invalidate() is
+ * called — this drives that at `fps` instead of every animation frame. At 60 the
+ * rebuild plus two transmission passes were consuming most of the frame budget
+ * and starving the main thread, which showed up as the custom cursor trailing
+ * over the hero and nowhere else.
+ *
+ * 30 is safe here because the ribbon's motion is slow, and because rotation and
+ * morph both advance from absolute elapsed time on each rendered frame — they
+ * stay in step, so this doesn't reintroduce the desync judder that came from
+ * previously updating the geometry at half the render rate.
+ */
+function FrameLimiter({ fps, active }: { fps: number; active: boolean }) {
+  const invalidate = useThree((state) => state.invalidate);
+
+  useEffect(() => {
+    if (!active) return;
+    let raf = 0;
+    let last = 0;
+    const interval = 1000 / fps;
+    const tick = (time: number) => {
+      raf = requestAnimationFrame(tick);
+      if (time - last < interval) return;
+      last = time;
+      invalidate();
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [invalidate, fps, active]);
+
+  return null;
+}
+
 /** Tracks the site theme without threading a prop through the lazy boundary. */
 function useIsLight() {
   const [light, setLight] = useState(
@@ -455,9 +490,12 @@ export default function HeroRibbon() {
         // transmission cost scales with pixel count.
         dpr={[1, 1.5]}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-        frameloop={visible ? "always" : "never"}
+        // `demand` rather than `always`: FrameLimiter drives rendering at a
+        // capped rate, and nothing renders at all once the hero scrolls away.
+        frameloop={visible ? "demand" : "never"}
         style={{ background: "transparent" }}
       >
+        <FrameLimiter fps={30} active={visible} />
         {/* The glows must exist in the scene for the ribbon's transmission pass
             to have anything to refract. */}
         <GlowField light={light} />
