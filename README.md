@@ -23,7 +23,7 @@ them; placeholders are visibly marked so nothing looks accidentally broken.
 
 | What | Where |
 | --- | --- |
-| Screenshots for FlashX, gheasy, Jexi | `src/data/projects.ts` → set `src` on each `images` entry |
+| Screenshots for gheasy and Jexi (FlashX is done) | `src/data/projects.ts` → set `src` on each `images` entry |
 | **Jexi's three module names + what each does** | `src/data/projects.ts` → the `highlights` and `impact` arrays under `jexi` |
 | Live URLs for FlashX / gheasy | `src/data/projects.ts` → `liveUrl` |
 | 4C_Curls_22 artwork + other design pieces | `src/data/gallery.ts` → set `src` on each piece |
@@ -49,8 +49,16 @@ Once the domain is live, update it in `index.html` (canonical, OG, Twitter, JSON
 
 ### Images
 
-Put real assets in `public/` (e.g. `public/work/flashx/dashboard.png`) and reference them
-as `/work/flashx/dashboard.png`. They're lazy-loaded automatically.
+Put real assets in `public/` (e.g. `public/work/gheasy/checkout.webp`) and reference them
+as `/work/gheasy/checkout.webp`. They're lazy-loaded automatically.
+
+Export to **WebP at ~1600px wide** — that's what the FlashX assets use, and it keeps a
+full-width screenshot around 40 kB while staying crisp on a retina display. A raw PNG
+screenshot is typically 4–5× larger for no visible gain.
+
+**Check captures for anything personal before they go in.** The FlashX admin screenshots
+arrived with an account email in the header; it's been painted out in the committed
+versions. Account names, real customer records and balances are all worth a look.
 
 ---
 

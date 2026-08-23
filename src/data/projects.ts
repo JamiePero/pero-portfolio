@@ -59,11 +59,21 @@ export const projects: Project[] = [
     // TODO: Pero to provide the live FlashX URL if it's public.
     liveUrl: undefined,
     images: [
-      // TODO: Pero to provide real screenshots — drop files in /public/work/flashx/
-      // and set `src` below. Placeholder frames render until then.
-      { alt: "FlashX operator dashboard", caption: "Operator dashboard — revenue and live sessions" },
-      { alt: "FlashX captive portal on mobile", caption: "Captive portal — package selection" },
-      { alt: "FlashX USSD purchase flow", caption: "USSD flow — buying access on a feature phone" },
+      {
+        src: "/work/flashx/mobile-app.webp",
+        alt: "FlashX mobile app interface showing plan status and quick actions",
+        caption: "The customer app — plan status, live usage and quick actions",
+      },
+      {
+        src: "/work/flashx/admin-overview.webp",
+        alt: "FlashX admin dashboard showing revenue and user analytics",
+        caption: "Admin workspace — revenue, users and active plans at a glance",
+      },
+      {
+        src: "/work/flashx/admin-analytics.webp",
+        alt: "FlashX admin analytics showing revenue trend, plan performance and sales channel breakdown",
+        caption: "Behind the scenes — 14-day revenue trend, plan performance and channel mix",
+      },
     ],
   },
   {
