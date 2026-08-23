@@ -28,3 +28,7 @@ dist-ssr
 .vercel
 
 .vercel
+
+# Stray npm --prefix artefact (unexpanded ~)
+'~'/
+'~/.npm-global'/
