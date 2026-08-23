@@ -24,12 +24,35 @@ export type Project = {
   /** Sticky-column copy: the narrative half of the case study. */
   problem: string;
   solution: string;
-  /** Bullet list rendered under the solution. */
-  highlights: string[];
+  /** Bullet list rendered under the solution. Omit for a project that carries
+   *  its detail in the extended sections below instead. */
+  highlights?: string[];
   tech: string[];
   impact: { value: string; label: string }[];
   liveUrl?: string;
   images: ProjectImage[];
+
+  /* ---------------------------------------------------------------------
+     Everything below is optional and renders full width beneath the pinned
+     narrative. Added for Jexi, which has genuine engineering detail worth
+     showing, but nothing here is Jexi-specific: a project that doesn't set
+     a field simply doesn't render that section.
+     --------------------------------------------------------------------- */
+
+  /** Competition win or similar. Rendered as a badge beside the hero image. */
+  award?: { title: string; detail: string };
+  /** What it does, as a grid rather than a wall of prose. */
+  features?: { title: string; body: string }[];
+  /** Bill of materials. Rendered as a spec table. */
+  hardware?: { part: string; role: string }[];
+  /** Ordered sequence describing one full cycle of operation. */
+  flow?: string[];
+  /** Pulled-out point, sitting apart from the body copy. */
+  callout?: { label: string; body: string };
+  /** Where it goes next, one column per stage. */
+  roadmap?: { stage: string; label: string; items: string[] }[];
+  /** Closing line under the roadmap. */
+  outlook?: string;
 };
 
 export const projects: Project[] = [
@@ -122,29 +145,113 @@ export const projects: Project[] = [
     id: "jexi",
     index: "03",
     name: "Jexi",
-    tagline: "Smart waste management, designed in Figma and shipped with Lovable",
+    tagline: "A connected bin that reports how full it actually is",
     year: "2025",
-    status: "In build",
+    status: "V1 built",
+    award: {
+      title: "National Champion",
+      detail: "Speak Out for Engineering '25, IMechE",
+    },
     problem:
-      "Waste collection mostly runs on guesswork. Trucks drive fixed routes past empty bins and miss the full ones, residents have no idea when pickup is coming, and whoever is coordinating it is working off phone calls and paper.",
+      "Bins overflow before the truck is scheduled to arrive. Meanwhile that same truck drives a fixed route and stops at bins barely half full, burning fuel and hours on collections nobody needed. With an ordinary bin there is no way to tell the two apart, because nothing about it reports anything. You end up with waste on the pavement in one street and a wasted trip in the next.",
     solution:
-      "Jexi is a mobile app that puts collection, tracking and coordination in one place. I designed the full product in Figma first, including the flows and the component library, then handed that system to Lovable.dev to build against. It went from static frames to a working app without losing the design intent along the way.",
-    highlights: [
-      // TODO: Pero to provide the three module names + what each one does, then
-      // expand the "three modules" line below into one row per module.
-      // Kept deliberately neutral rather than as visible TODO text — these
-      // render as body copy on the live site.
-      "Full product designed in Figma first, covering flows, component library and states",
-      "Structured as three modules",
-      "Handed to Lovable.dev to build against, going from static frames to a working app without losing the design intent",
-      "Mobile-first, because it's built for the people doing the collecting rather than for a desk",
+      "Jexi is a bin that measures its own fill level and tells you about it. An ultrasonic sensor reads how much room is left, an ESP32 processes that and pushes it to a dashboard, and when the bin hits capacity it sends an SMS. Collection stops being a fixed schedule and becomes a decision. Rather than sending a truck to every bin on the route, the team sees Bin 01 at 87 percent and goes there first.",
+    tech: [
+      "ESP32",
+      "C++",
+      "HC-SR04",
+      "MG996R servo",
+      "SIM900 GSM",
+      "Blynk IoT",
+      "TinyGPSPlus",
+      "Fusion 360",
     ],
-    tech: ["Figma", "Lovable.dev", "Design systems", "Mobile UX"],
     impact: [
-      { value: "3", label: "Modules making up the product" },
-      { value: "Figma → build", label: "Design-led handoff to Lovable.dev" },
-      { value: "Mobile-first", label: "Built for the people doing the collecting" },
+      { value: "Real time", label: "Fill level straight to the dashboard" },
+      { value: "SMS", label: "Alert the moment a bin is full" },
+      { value: "ESP32", label: "One controller running the whole bin" },
     ],
+    features: [
+      {
+        title: "Automatic lid",
+        body: "A servo lifts the lid when someone walks up, so nobody has to touch it.",
+      },
+      {
+        title: "Waste level monitoring",
+        body: "An ultrasonic sensor measures how much room is left inside the bin.",
+      },
+      {
+        title: "Remote monitoring",
+        body: "Bin status goes up to a cloud dashboard as it changes.",
+      },
+      {
+        title: "Full bin alert",
+        body: "An SMS goes out the moment the bin reaches capacity.",
+      },
+      {
+        title: "GPS tracking",
+        body: "Reports where the bin is, along with speed and altitude.",
+      },
+      {
+        title: "IoT dashboard",
+        body: "Built on Blynk, so the data is readable from anywhere.",
+      },
+    ],
+    hardware: [
+      { part: "ESP32 38-pin dev board", role: "Main controller" },
+      { part: "HC-SR04 ultrasonic sensor", role: "Measures waste level" },
+      { part: "MG996R servo motor", role: "Drives the automatic lid" },
+      { part: "SIM900 GSM module", role: "SMS and network communication" },
+      { part: "GPS module", role: "Position tracking" },
+      { part: "Blynk IoT", role: "Remote monitoring dashboard" },
+      { part: "TinyGPSPlus", role: "GPS data processing" },
+    ],
+    flow: [
+      "Someone approaches the bin",
+      "The servo lifts the lid",
+      "Waste goes in and the lid closes",
+      "The ultrasonic sensor reads the new level",
+      "The ESP32 processes that reading",
+      "Status is pushed to the Blynk dashboard",
+      "If the bin has hit capacity, an SMS goes out",
+    ],
+    callout: {
+      label: "Why it matters",
+      body: "Collecting every bin regardless of how full it is costs fuel, hours and vehicle wear on trips that did not need to happen. Monitor first, then send the truck only where it is needed. On one bin that is a small saving. Across a fleet it is most of the operating cost.",
+    },
+    roadmap: [
+      {
+        stage: "V1",
+        label: "Built",
+        items: [
+          "ESP32 with ultrasonic and GPS sensors",
+          "Servo-driven automatic lid",
+          "Blynk dashboard and SMS alerts",
+        ],
+      },
+      {
+        stage: "V2",
+        label: "Next",
+        items: [
+          "Dedicated PCB in place of the dev board",
+          "Proper waterproofing and a tougher enclosure",
+          "Solar and battery power",
+          "Better sensors and cellular IoT",
+        ],
+      },
+      {
+        stage: "V3",
+        label: "Where it goes",
+        items: [
+          "Fleet platform with many bins on one dashboard",
+          "Automatic collection prioritisation",
+          "Route optimisation and analytics",
+          "Municipal and company accounts",
+        ],
+      },
+    ],
+    outlook:
+      "The end of this is not a smart bin. It is a network of them, where the route plans itself around what the bins are actually doing.",
     liveUrl: undefined,
     images: [
       {
@@ -168,25 +275,19 @@ export const projects: Project[] = [
         caption: "Exploded: lid, sensor mechanism and body",
         aspect: "wide",
       },
-      // TODO: Pero to supply app screenshots and a Figma board, then set `src`
-      // on the three below. They render as pending frames until then.
-      //   app-home.webp       phone screenshot, portrait
-      //   app-modules.webp    phone screenshot, portrait
-      //   figma-system.webp   Figma board, wide
+      // TODO: Pero to supply these two, then run `npm run optimize:images` and
+      // point them at the .webp pair it produces. Pending frames until then.
+      //   blynk-dashboard   screenshot of the live dashboard, wide
+      //   electronics       the ESP32, sensors and GSM module wired up, landscape
       {
-        alt: "Jexi app home screen showing the collection schedule",
-        caption: "Home, with the collection schedule up front",
-        aspect: "portrait",
-      },
-      {
-        alt: "Jexi app screens showing the three modules",
-        caption: "The three modules",
-        aspect: "portrait",
-      },
-      {
-        alt: "Jexi Figma design system with components and flows",
-        caption: "The Figma design system handed to Lovable.dev",
+        alt: "The Blynk dashboard showing live fill level and location for a Jexi bin",
+        caption: "The Blynk dashboard, reading a bin live",
         aspect: "wide",
+      },
+      {
+        alt: "The Jexi electronics, showing the ESP32 board wired to the ultrasonic sensor, servo and GSM module",
+        caption: "The electronics: ESP32, ultrasonic sensor, servo and GSM",
+        aspect: "landscape",
       },
     ],
   },
