@@ -14,8 +14,9 @@ export const site = {
     handle: "@Itz_Pero",
     url: "https://x.com/Itz_Pero",
   },
-  // TODO: Pero to provide the production domain, then update index.html's og:url too.
-  url: "https://pero.dev",
+  // Canonical origin. Mirrored in index.html (canonical/OG/Twitter/JSON-LD),
+  // public/robots.txt and public/sitemap.xml — update all four together.
+  url: "https://jamiepero.com",
   description:
     "Pero is a builder based in Ghana working across hardware, software and design — 3D modelling, brand identity, Arduino/ESP32 systems, and web development with technical SEO.",
 } as const;

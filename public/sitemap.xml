@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Single-page site, so one entry. TODO: Pero to update the domain. -->
+<!-- Single-page site, so one entry. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://pero.dev/</loc>
+    <loc>https://jamiepero.com/</loc>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
