@@ -1,6 +1,7 @@
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useRef, useState, type ReactNode } from "react";
 import type { Project, ProjectImage } from "../data/projects";
+import { MagneticButton } from "./MagneticButton";
 import { Placeholder } from "./Placeholder";
 import { Reveal, RevealWords } from "./Reveal";
 
@@ -210,6 +211,23 @@ function ExtendedSections({ project }: { project: Project }) {
   const { features, hardware, flow, callout, roadmap, outlook } = project;
   if (!features && !hardware && !flow && !callout && !roadmap) return null;
 
+  // The deep detail below the feature grid is collapsed by default so a
+  // content-heavy case study (Jexi) doesn't tower over the others. Only worth a
+  // toggle when that deeper detail actually exists.
+  const hasDeepDetail = Boolean(flow?.length || hardware?.length || callout || roadmap?.length);
+  const [expanded, setExpanded] = useState(false);
+  const showDeep = !hasDeepDetail || expanded;
+
+  // Names the section kinds hidden behind the toggle, so the button says what
+  // it opens instead of being a blind "read more".
+  const hiddenHint = [
+    flow?.length ? "how it works" : null,
+    hardware?.length ? "hardware" : null,
+    roadmap?.length ? "roadmap" : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
   return (
     <div className="mt-16 space-y-16 border-t border-line pt-14 md:mt-24 md:space-y-20 md:pt-20">
       {features?.length ? (
@@ -230,7 +248,26 @@ function ExtendedSections({ project }: { project: Project }) {
         </section>
       ) : null}
 
-      {flow?.length ? (
+      {hasDeepDetail && !expanded ? (
+        <div className="flex flex-col items-center gap-3">
+          <MagneticButton
+            variant="outline"
+            onClick={() => setExpanded(true)}
+            className="px-7"
+            ariaLabel={`Read the full ${project.name} breakdown`}
+          >
+            Read the full breakdown
+            <CollapseChevron flipped={false} />
+          </MagneticButton>
+          {hiddenHint ? (
+            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted opacity-60">
+              {hiddenHint}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
+      {showDeep && flow?.length ? (
         <section>
           <SubHeading>How it works</SubHeading>
           <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -250,7 +287,7 @@ function ExtendedSections({ project }: { project: Project }) {
         </section>
       ) : null}
 
-      {hardware?.length ? (
+      {showDeep && hardware?.length ? (
         <section>
           <SubHeading>What's inside</SubHeading>
           <Reveal>
@@ -285,7 +322,7 @@ function ExtendedSections({ project }: { project: Project }) {
         </section>
       ) : null}
 
-      {callout ? (
+      {showDeep && callout ? (
         <Reveal>
           <aside className="rounded-2xl border border-accent/30 bg-accent/[0.06] p-7 md:p-10">
             <h4 className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">
@@ -298,7 +335,7 @@ function ExtendedSections({ project }: { project: Project }) {
         </Reveal>
       ) : null}
 
-      {roadmap?.length ? (
+      {showDeep && roadmap?.length ? (
         <section>
           <SubHeading>Where it goes next</SubHeading>
           <ol className="mt-8 grid gap-5 md:grid-cols-3">
@@ -341,7 +378,38 @@ function ExtendedSections({ project }: { project: Project }) {
           ) : null}
         </section>
       ) : null}
+
+      {hasDeepDetail && expanded ? (
+        <div className="flex justify-center">
+          <MagneticButton
+            variant="outline"
+            onClick={() => setExpanded(false)}
+            className="px-7"
+            ariaLabel="Collapse the breakdown"
+          >
+            Show less
+            <CollapseChevron flipped />
+          </MagneticButton>
+        </div>
+      ) : null}
     </div>
+  );
+}
+
+function CollapseChevron({ flipped }: { flipped: boolean }) {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`h-4 w-4 transition-transform duration-300 ${flipped ? "rotate-180" : ""}`}
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
   );
 }
 
