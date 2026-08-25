@@ -53,15 +53,26 @@ export function hasWebGL(): boolean {
 }
 
 /**
- * The hero's glass ribbon. Strictest gate on the page, because it is pure
- * decoration: it also refuses on phones, where the CSS stand-in reads nearly
- * the same at that size and costs nothing.
+ * True for phone-sized touch devices. No longer a reason to refuse the 3D, but
+ * it still selects the reduced-quality tier in HeroRibbon.
+ */
+export function isCompactDevice(): boolean {
+  return window.matchMedia("(pointer: coarse)").matches && window.innerWidth < 900;
+}
+
+/**
+ * The hero's glass ribbon.
+ *
+ * This used to refuse outright on phones, on the theory that the ribbon is
+ * decoration and the CSS stand-in is close enough at that size. It isn't: the
+ * ribbon is the single most distinctive thing on the page and phones are most
+ * of the traffic. Phones now get it at a reduced quality tier instead.
+ *
+ * The remaining gates all still apply, and genuinely weak or metered devices
+ * continue to fall back.
  */
 export function canRenderHeroGlass(): boolean {
   if (prefersReducedMotion()) return false;
-  const isPhone =
-    window.matchMedia("(pointer: coarse)").matches && window.innerWidth < 900;
-  if (isPhone) return false;
   if (isLowPoweredDevice()) return false;
   if (hasSlowConnection()) return false;
   return hasWebGL();
@@ -99,11 +110,12 @@ export function capabilityReport() {
     modelViewer: canRenderModelViewer(),
     blockedBy: {
       reducedMotion: prefersReducedMotion(),
-      phone: window.matchMedia("(pointer: coarse)").matches && window.innerWidth < 900,
       lowPowered: isLowPoweredDevice(),
       slowConnection: hasSlowConnection(),
       noWebGL: !hasWebGL(),
     },
+    // Not a blocker any more, but it selects the reduced-quality tier.
+    compactDevice: isCompactDevice(),
     raw: {
       deviceMemory: (navigator as Navigator & { deviceMemory?: number }).deviceMemory,
       hardwareConcurrency: navigator.hardwareConcurrency,

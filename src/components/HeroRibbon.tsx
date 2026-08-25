@@ -17,8 +17,21 @@ import * as THREE from "three";
  * sphere cannot express that topology at any subdivision level.
  */
 
+/**
+ * Reduced-quality tier for phones.
+ *
+ * Read once at module load, which is safe because this module is lazy-imported
+ * well after mount. Phones now get the ribbon rather than the CSS stand-in, but
+ * the full-fat settings would ask a handset CPU to rebuild 34k triangles every
+ * frame while its GPU runs a transmission pass, so every cost driver steps down.
+ */
+const COMPACT =
+  typeof window !== "undefined" &&
+  window.matchMedia("(pointer: coarse)").matches &&
+  window.innerWidth < 900;
+
 /** Samples along the ribbon's length. Tight folds need the density. */
-const SEGMENTS = 660;
+const SEGMENTS = COMPACT ? 340 : 660;
 /**
  * Segments per semicircular end of the cross-section.
  *
@@ -27,7 +40,7 @@ const SEGMENTS = 660;
  * each arc step was 36° and the highlight broke into visible facets. At 12 it's
  * 15°, and the edge reads as a continuous line of light.
  */
-const CAP_SEGMENTS = 12;
+const CAP_SEGMENTS = COMPACT ? 8 : 12;
 
 const HALF_WIDTH = 0.44;
 const HALF_THICK = 0.038;
@@ -283,8 +296,11 @@ function Ribbon({ light }: { light: boolean }) {
         // see on a ribbon this thin (0.076 units) — unlike on a solid volume,
         // where it earns its cost. Purely a per-frame GPU saving; it has no
         // effect on chunk size.
-        samples={4}
-        resolution={256}
+        // Transmission renders the scene into an offscreen buffer every frame,
+        // so both of these scale directly with GPU cost. The buffer is only ever
+        // seen through a refracting surface, which hides the lower resolution.
+        samples={COMPACT ? 2 : 4}
+        resolution={COMPACT ? 128 : 256}
         transmission={1}
         // Light mode needs *thicker* glass with a shorter attenuation distance,
         // not thinner. Near-clear glass on a near-white page is a ghost; the
@@ -577,15 +593,22 @@ export default function HeroRibbon({ onReady }: { onReady?: () => void }) {
       <Canvas
         camera={{ position: [0, 0, 5.4], fov: 42 }}
         // Cap DPR: a decorative background gains nothing from a 3x render, and
-        // transmission cost scales with pixel count.
-        dpr={[1, 1.5]}
-        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+        // transmission cost scales with pixel count. Phones report DPR 3 or
+        // more, so this is the single biggest saving on mobile.
+        dpr={COMPACT ? [1, 1.2] : [1, 1.5]}
+        gl={{
+          // Antialiasing is a real cost on mobile GPUs and the ribbon has no
+          // long straight edges to alias badly.
+          antialias: !COMPACT,
+          alpha: true,
+          powerPreference: "high-performance",
+        }}
         // `demand` rather than `always`: FrameLimiter drives rendering at a
         // capped rate, and nothing renders at all once the hero scrolls away.
         frameloop={visible ? "demand" : "never"}
         style={{ background: "transparent" }}
       >
-        <FrameLimiter fps={30} active={visible} />
+        <FrameLimiter fps={COMPACT ? 24 : 30} active={visible} />
         <FirstFrameSignal onReady={onReady} />
         {/* The glows must exist in the scene for the ribbon's transmission pass
             to have anything to refract. */}

@@ -1,4 +1,5 @@
 import { About } from "./components/About";
+import { CapabilityDebug } from "./components/CapabilityDebug";
 import { Contact } from "./components/Contact";
 import { Cursor } from "./components/Cursor";
 import { Footer } from "./components/Footer";
@@ -29,6 +30,8 @@ export default function App() {
         <Contact />
       </main>
       <Footer />
+      {/* Renders only for ?debug=caps */}
+      <CapabilityDebug />
     </>
   );
 }
