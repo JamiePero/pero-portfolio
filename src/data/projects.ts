@@ -135,10 +135,25 @@ export const projects: Project[] = [
     // TODO: Pero to provide the live gheasy URL if it's public.
     liveUrl: undefined,
     images: [
-      // TODO: Pero to provide real screenshots — /public/work/gheasy/
-      { alt: "gheasy bundle purchase screen", caption: "No-login checkout: number, bundle, pay" },
-      { alt: "gheasy agent dashboard", caption: "The agent dashboard, with wallet and order pipeline" },
-      { alt: "Easy Games suite", caption: "Easy Games, the layer that brings people back" },
+      {
+        src: "/work/gheasy/mobile-app.webp",
+        src2x: "/work/gheasy/mobile-app@2x.webp",
+        alt: "The gheasy mobile app shown on two phones: the easy splash screen, and the home screen with the buy data call to action, network support, agent signup and the games tab",
+        caption: "The app: instant delivery, mobile money, and every network",
+        aspect: "landscape",
+      },
+      // TODO: Pero to provide these two, then run
+      // `npm run optimize:images public/work/gheasy`.
+      {
+        alt: "gheasy agent dashboard",
+        caption: "The agent dashboard, with wallet and order pipeline",
+        aspect: "portrait",
+      },
+      {
+        alt: "Easy Games suite",
+        caption: "Easy Games, the layer that brings people back",
+        aspect: "portrait",
+      },
     ],
   },
   {
