@@ -79,9 +79,22 @@ export function Nav({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () 
             className="group flex items-center gap-2 font-display text-lg font-semibold tracking-tight"
             aria-label={onHome ? "Back to top" : "Back to home"}
           >
-            <span className="grid h-7 w-7 place-items-center rounded-md bg-accent font-mono text-xs font-bold text-on-accent">
-              P
-            </span>
+            {/* Two files rather than one recoloured with CSS: the mark's accent
+                sphere is a full-colour render, so a filter would wreck it. Both
+                are padded to the same box, so the swap doesn't shift the layout. */}
+            <img
+              src={theme === "dark" ? "/brand/mark-dark.webp" : "/brand/mark-light.webp"}
+              srcSet={
+                theme === "dark"
+                  ? "/brand/mark-dark.webp 1x, /brand/mark-dark@2x.webp 2x"
+                  : "/brand/mark-light.webp 1x, /brand/mark-light@2x.webp 2x"
+              }
+              width={41}
+              height={36}
+              alt=""
+              decoding="async"
+              className="h-9 w-auto"
+            />
             <span className="hidden sm:inline">{site.name}</span>
           </button>
 
