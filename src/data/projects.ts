@@ -290,19 +290,27 @@ export const projects: Project[] = [
         caption: "Exploded: lid, sensor mechanism and body",
         aspect: "wide",
       },
-      // TODO: Pero to supply these two, then run `npm run optimize:images` and
-      // point them at the .webp pair it produces. Pending frames until then.
-      //   blynk-dashboard   screenshot of the live dashboard, wide
-      //   electronics       the ESP32, sensors and GSM module wired up, landscape
+      {
+        src: "/work/jexi/technical-drawing.webp",
+        src2x: "/work/jexi/technical-drawing@2x.webp",
+        alt: "Third angle projection of the Jexi smart bin with dimensions, showing front, side and plan views alongside an isometric render",
+        caption: "Third angle projection, dimensioned for manufacture",
+        aspect: "wide",
+      },
+      {
+        src: "/work/jexi/electronics.webp",
+        src2x: "/work/jexi/electronics@2x.webp",
+        alt: "System diagram of the Jexi electronics, showing the ESP32 wired to ultrasonic sensors, a servo, a GPS module and a SIM900 GSM module, with data flowing to the cloud and an SMS alert to a phone",
+        caption: "How the electronics hang together, from sensor to SMS",
+        aspect: "wide",
+      },
+      // TODO: Pero to supply the Blynk dashboard screenshot, then run
+      // `npm run optimize:images public/work/jexi` and point this at the .webp
+      // pair it produces. Renders as a pending frame until then.
       {
         alt: "The Blynk dashboard showing live fill level and location for a Jexi bin",
         caption: "The Blynk dashboard, reading a bin live",
         aspect: "wide",
-      },
-      {
-        alt: "The Jexi electronics, showing the ESP32 board wired to the ultrasonic sensor, servo and GSM module",
-        caption: "The electronics: ESP32, ultrasonic sensor, servo and GSM",
-        aspect: "landscape",
       },
     ],
   },
