@@ -30,6 +30,15 @@ export const heroRoles = [
   "Founder",
 ] as const;
 
+/**
+ * Nav items that live on their own route rather than being a scroll target on
+ * the main page. Rendered after the section links.
+ */
+export const navRoutes = [
+  { path: "/youtube", label: "Youtube" },
+  { path: "/tools", label: "Tools" },
+] as const;
+
 /** Nav + scroll-spy targets. Order matches the section order on the page. */
 export const navSections = [
   { id: "about", label: "About" },

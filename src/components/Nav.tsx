@@ -1,25 +1,43 @@
 import { AnimatePresence, motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { useState } from "react";
-import { navSections, site } from "../data/site";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { navRoutes, navSections, site } from "../data/site";
 import { scrollToSection } from "../hooks/useSmoothScroll";
 import { useActiveSection } from "../hooks/useActiveSection";
 import { ThemeToggle } from "./ThemeToggle";
 import type { Theme } from "../hooks/useTheme";
 
 const sectionIds = navSections.map((section) => section.id);
+// Module-level constant, not an inline []: useActiveSection keys its effect on
+// the array identity, so a fresh literal each render would tear down and rebuild
+// the IntersectionObserver every time.
+const NO_SECTIONS: readonly string[] = [];
 
 export function Nav({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () => void }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { scrollY } = useScroll();
-  const active = useActiveSection(sectionIds);
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const onHome = pathname === "/";
+  // Scroll-spy is meaningless off the main page, so don't run it there.
+  const active = useActiveSection(onHome ? sectionIds : NO_SECTIONS);
 
   // The nav only materialises once the hero is behind you.
   useMutedScrollState(scrollY, setScrolled);
 
+  /**
+   * Section links have to work from anywhere. On the main page that's a scroll;
+   * from another route it's a navigation to `/#id`, and HomePage scrolls once
+   * the sections have laid out.
+   */
   function goTo(id: string) {
     setMenuOpen(false);
-    scrollToSection(id);
+    if (onHome) {
+      scrollToSection(id);
+    } else {
+      navigate(`/#${id}`);
+    }
   }
 
   return (
@@ -51,10 +69,15 @@ export function Nav({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () 
         >
           <button
             type="button"
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            onClick={() => {
+              setMenuOpen(false);
+              // On a subpage the logo is a way home, not a scroll control.
+              if (onHome) window.scrollTo({ top: 0, behavior: "smooth" });
+              else navigate("/");
+            }}
             data-cursor="hover"
             className="group flex items-center gap-2 font-display text-lg font-semibold tracking-tight"
-            aria-label="Back to top"
+            aria-label={onHome ? "Back to top" : "Back to home"}
           >
             <span className="grid h-7 w-7 place-items-center rounded-md bg-accent font-mono text-xs font-bold text-on-accent">
               P
@@ -62,18 +85,31 @@ export function Nav({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () 
             <span className="hidden sm:inline">{site.name}</span>
           </button>
 
-          <ul className="hidden items-center gap-8 md:flex">
+          <ul className="hidden items-center gap-7 md:flex">
             {navSections.map((section) => (
               <li key={section.id}>
                 <button
                   type="button"
                   onClick={() => goTo(section.id)}
-                  data-active={active === section.id}
+                  data-active={onHome && active === section.id}
                   data-cursor="hover"
                   className="link-underline text-sm text-muted transition-colors duration-300 hover:text-ink data-[active=true]:text-ink"
                 >
                   {section.label}
                 </button>
+              </li>
+            ))}
+            {navRoutes.map((route) => (
+              <li key={route.path}>
+                <Link
+                  to={route.path}
+                  onClick={() => setMenuOpen(false)}
+                  data-active={pathname === route.path}
+                  data-cursor="hover"
+                  className="link-underline text-sm text-muted transition-colors duration-300 hover:text-ink data-[active=true]:text-ink"
+                >
+                  {route.label}
+                </Link>
               </li>
             ))}
           </ul>
@@ -137,6 +173,28 @@ export function Nav({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () 
                       </span>
                       {section.label}
                     </button>
+                  </motion.li>
+                ))}
+                {navRoutes.map((route, index) => (
+                  <motion.li
+                    key={route.path}
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{
+                      delay: 0.04 * (navSections.length + index),
+                      duration: 0.3,
+                    }}
+                  >
+                    <Link
+                      to={route.path}
+                      onClick={() => setMenuOpen(false)}
+                      className="block w-full border-b border-line py-3.5 text-left font-display text-lg text-ink"
+                    >
+                      <span className="mr-3 font-mono text-xs text-accent">
+                        0{navSections.length + index + 1}
+                      </span>
+                      {route.label}
+                    </Link>
                   </motion.li>
                 ))}
               </ul>
