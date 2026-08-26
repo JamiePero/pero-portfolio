@@ -1,22 +1,47 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { useState } from "react";
-import { thumbnailUrl, watchUrl, type Video } from "../data/youtube";
+import { shortThumbnailUrl, thumbnailUrl, watchUrl, type Video } from "../data/youtube";
 
-export function VideoGrid({ videos }: { videos: Video[] }) {
+export function VideoGrid({
+  videos,
+  variant = "wide",
+}: {
+  videos: Video[];
+  /** Shorts are 9:16, so they get a taller card and a denser grid. */
+  variant?: "wide" | "short";
+}) {
   return (
-    <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <ul
+      className={
+        variant === "short"
+          ? "grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5"
+          : "grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+      }
+    >
       {videos.map((video, index) => (
-        <VideoCard key={video.videoId} video={video} index={index} />
+        <VideoCard key={video.videoId} video={video} index={index} variant={variant} />
       ))}
     </ul>
   );
 }
 
-function VideoCard({ video, index }: { video: Video; index: number }) {
+function VideoCard({
+  video,
+  index,
+  variant,
+}: {
+  video: Video;
+  index: number;
+  variant: "wide" | "short";
+}) {
   const reduced = useReducedMotion();
   // maxresdefault doesn't exist for every upload, so fall back to hqdefault,
   // which YouTube always generates.
   const [size, setSize] = useState<"max" | "hq">("max");
+  // oardefault is the only variant that returns a Short's real vertical frame;
+  // if it ever 404s, drop back to the 16:9 thumbnail rather than a broken image.
+  const [verticalFailed, setVerticalFailed] = useState(false);
+  const isShort = variant === "short" && !verticalFailed;
 
   return (
     <motion.li
@@ -32,10 +57,14 @@ function VideoCard({ video, index }: { video: Video; index: number }) {
         data-cursor="hover"
         className="group block"
       >
-        <div className="relative aspect-video overflow-hidden rounded-xl border border-line bg-elevated">
+        <div
+          className={`relative overflow-hidden rounded-xl border border-line bg-elevated ${
+            variant === "short" ? "aspect-[9/16]" : "aspect-video"
+          }`}
+        >
           <img
-            src={thumbnailUrl(video.videoId, size)}
-            onError={() => setSize("hq")}
+            src={isShort ? shortThumbnailUrl(video.videoId) : thumbnailUrl(video.videoId, size)}
+            onError={() => (isShort ? setVerticalFailed(true) : setSize("hq"))}
             alt={video.title ? `Thumbnail for ${video.title}` : "YouTube video thumbnail"}
             loading="lazy"
             decoding="async"

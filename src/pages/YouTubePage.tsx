@@ -6,13 +6,15 @@ import { SectionHeading } from "../components/SectionHeading";
 import { VideoGrid } from "../components/VideoGrid";
 import { channel, mostWatched, RECENT_LIMIT, type Video } from "../data/youtube";
 
-type Tab = "recent" | "most-watched";
+type Tab = "recent" | "shorts" | "most-watched";
 type FeedState =
   | { status: "loading" }
   | { status: "ready"; videos: Video[] }
   | { status: "error" };
 
-const CACHE_KEY = "pero-yt-recent";
+// Versioned: entries cached before Shorts detection existed have no isShort
+// flag, and would all fall into Recent. Bumping the key retires them.
+const CACHE_KEY = "pero-yt-recent-v2";
 
 /**
  * Reads the recent uploads once per session.
@@ -97,6 +99,7 @@ export function YouTubePage() {
             {(
               [
                 { id: "recent", label: "Recent" },
+                { id: "shorts", label: "Shorts" },
                 { id: "most-watched", label: "Most Watched" },
               ] as const
             ).map((item) => {
@@ -147,7 +150,13 @@ export function YouTubePage() {
               id={`panel-${tab}`}
               aria-labelledby={`tab-${tab}`}
             >
-              {tab === "recent" ? <RecentPanel state={recent} /> : <MostWatchedPanel />}
+              {tab === "recent" ? (
+                <FeedPanel state={recent} kind="video" />
+              ) : tab === "shorts" ? (
+                <FeedPanel state={recent} kind="short" />
+              ) : (
+                <MostWatchedPanel />
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -156,13 +165,30 @@ export function YouTubePage() {
   );
 }
 
-function RecentPanel({ state }: { state: FeedState }) {
+/**
+ * Recent and Shorts are the same feed, split by the isShort flag the proxy sets.
+ * One request serves both tabs.
+ */
+function FeedPanel({ state, kind }: { state: FeedState; kind: "video" | "short" }) {
+  const wantsShorts = kind === "short";
+
   if (state.status === "loading") {
     return (
-      <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" aria-busy="true">
-        {Array.from({ length: 6 }).map((_, index) => (
+      <ul
+        className={
+          wantsShorts
+            ? "grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5"
+            : "grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        }
+        aria-busy="true"
+      >
+        {Array.from({ length: wantsShorts ? 10 : 6 }).map((_, index) => (
           <li key={index}>
-            <div className="aspect-video animate-pulse rounded-xl border border-line bg-elevated" />
+            <div
+              className={`animate-pulse rounded-xl border border-line bg-elevated ${
+                wantsShorts ? "aspect-[9/16]" : "aspect-video"
+              }`}
+            />
             <div className="mt-3 h-3.5 w-3/4 animate-pulse rounded bg-elevated" />
           </li>
         ))}
@@ -187,7 +213,19 @@ function RecentPanel({ state }: { state: FeedState }) {
     );
   }
 
-  return <VideoGrid videos={state.videos} />;
+  const filtered = state.videos.filter((video) => Boolean(video.isShort) === wantsShorts);
+
+  if (filtered.length === 0) {
+    return (
+      <EmptyNote>
+        {wantsShorts
+          ? "No Shorts in the latest uploads. They'll appear here as soon as one lands."
+          : "No full-length videos in the latest uploads. Try the Shorts tab."}
+      </EmptyNote>
+    );
+  }
+
+  return <VideoGrid videos={filtered} variant={wantsShorts ? "short" : "wide"} />;
 }
 
 function MostWatchedPanel() {

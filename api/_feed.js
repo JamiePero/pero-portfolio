@@ -53,6 +53,32 @@ export function parseFeed(xml) {
     .filter((video) => video.videoId);
 }
 
+/**
+ * Works out whether a video is a Short.
+ *
+ * The feed doesn't say, and we're deliberately not using the Data API, so this
+ * asks YouTube directly: /shorts/{id} stays put and returns 200 for a Short, and
+ * 303-redirects to /watch for anything else. Measured across the whole channel
+ * it classified every video with nothing left over.
+ *
+ * HEAD only, and never fatal: if YouTube is slow or blocks the probe the video
+ * is treated as a regular upload, so it still shows up in Recent rather than
+ * disappearing from both tabs.
+ */
+async function isShort(videoId) {
+  try {
+    const response = await fetch(`https://www.youtube.com/shorts/${videoId}`, {
+      method: "HEAD",
+      redirect: "manual",
+      signal: AbortSignal.timeout(4000),
+      headers: { "user-agent": "Mozilla/5.0 (compatible; pero-portfolio/1.0)" },
+    });
+    return response.status === 200;
+  } catch {
+    return false;
+  }
+}
+
 export async function fetchChannelVideos(channelId, limit = 12) {
   if (!/^UC[\w-]{22}$/.test(channelId)) {
     throw new Error("Invalid channel id");
@@ -66,5 +92,12 @@ export async function fetchChannelVideos(channelId, limit = 12) {
     throw new Error(`Feed responded ${response.status}`);
   }
 
-  return parseFeed(await response.text()).slice(0, limit);
+  const videos = parseFeed(await response.text()).slice(0, limit);
+
+  // In parallel, not in sequence. Individually these probes run 0.2s to 2.4s;
+  // one after another that's over 20 seconds, which would exceed the function's
+  // timeout. Together they cost about as long as the slowest one.
+  const flags = await Promise.all(videos.map((video) => isShort(video.videoId)));
+
+  return videos.map((video, index) => ({ ...video, isShort: flags[index] }));
 }

@@ -3,13 +3,18 @@ export const channel = {
   url: "https://www.youtube.com/channel/UCoW9wtFkAbnWW-B0unohe2Q",
 } as const;
 
-/** How many recent uploads the grid asks the feed for. */
-export const RECENT_LIMIT = 12;
+/**
+ * How many recent uploads to request. The feed returns 15 at most, and that
+ * pool now feeds two tabs once Shorts are split out, so take all of it.
+ */
+export const RECENT_LIMIT = 15;
 
 export type Video = {
   videoId: string;
   title: string;
   published?: string;
+  /** Set by the feed proxy, which probes YouTube to classify each upload. */
+  isShort?: boolean;
 };
 
 /**
@@ -48,6 +53,17 @@ export function thumbnailUrl(videoId: string, size: "max" | "hq" = "max"): strin
   return `https://img.youtube.com/vi/${videoId}/${file}.jpg`;
 }
 
+/**
+ * Vertical thumbnail for a Short.
+ *
+ * The usual variants are all 16:9, so a Short comes back letterboxed or centre
+ * cropped. `oardefault` is the original aspect ratio: 720x1280 for a Short, and
+ * a 404 for anything filmed 16:9, which is why it's only used on Shorts.
+ */
+export function shortThumbnailUrl(videoId: string): string {
+  return `https://img.youtube.com/vi/${videoId}/oardefault.jpg`;
+}
+
 export function watchUrl(videoId: string): string {
   return `https://www.youtube.com/watch?v=${videoId}`;
 }
@@ -59,16 +75,29 @@ export function watchUrl(videoId: string): string {
    Data API, a key and a quota. Curating instead keeps the page's only external
    dependency the free feed.
 
-   TODO: Pero to paste his best-performing video URLs here. Any YouTube URL
-   shape works; toVideoId sorts it out. Until this has entries, the Most Watched
-   tab explains itself rather than rendering an empty grid.
+   Add or reorder freely. Any YouTube URL shape works; toVideoId sorts it out.
+   If this is ever emptied, the tab explains itself rather than rendering an
+   empty grid.
    =========================================================================== */
-export const mostWatchedUrls: string[] = [];
+export const mostWatchedPicks: { url: string; title: string }[] = [
+  {
+    url: "https://youtu.be/pBP37e3BkTA",
+    title: "How to Cancel Your Starlink Order (Step-by-Step Guide)",
+  },
+  {
+    url: "https://youtu.be/S2Mxp-02-Bk",
+    title: "From Fusion 360 to Blender: Designing and Rendering a Smart Bin",
+  },
+  {
+    url: "https://youtu.be/vAJdHrDTtRM",
+    title: "Arduino Smart Bin Tutorial: Build a DIY Smart Trash Bin at Home",
+  },
+];
 
 /** The curated list, resolved to ids and with anything unparseable dropped. */
-export const mostWatched: Video[] = mostWatchedUrls
-  .map((url) => {
-    const videoId = toVideoId(url);
-    return videoId ? { videoId, title: "" } : null;
+export const mostWatched: Video[] = mostWatchedPicks
+  .map((pick) => {
+    const videoId = toVideoId(pick.url);
+    return videoId ? { videoId, title: pick.title } : null;
   })
   .filter((video): video is Video => video !== null);
