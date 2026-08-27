@@ -4,52 +4,52 @@
      src/data/site.ts. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://jamiepero.com/</loc>
+    <loc>https://www.jamiepero.com/</loc>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://jamiepero.com/work</loc>
+    <loc>https://www.jamiepero.com/work</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://jamiepero.com/about</loc>
+    <loc>https://www.jamiepero.com/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://jamiepero.com/design</loc>
+    <loc>https://www.jamiepero.com/design</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://jamiepero.com/services</loc>
+    <loc>https://www.jamiepero.com/services</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://jamiepero.com/pricing</loc>
+    <loc>https://www.jamiepero.com/pricing</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://jamiepero.com/contact</loc>
+    <loc>https://www.jamiepero.com/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://jamiepero.com/youtube</loc>
+    <loc>https://www.jamiepero.com/youtube</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://jamiepero.com/tools</loc>
+    <loc>https://www.jamiepero.com/tools</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://jamiepero.com/tools/dca-bot</loc>
+    <loc>https://www.jamiepero.com/tools/dca-bot</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

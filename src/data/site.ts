@@ -16,7 +16,7 @@ export const site = {
   },
   // Canonical origin. Mirrored in index.html (canonical/OG/Twitter/JSON-LD),
   // public/robots.txt and public/sitemap.xml — update all four together.
-  url: "https://jamiepero.com",
+  url: "https://www.jamiepero.com",
   description:
     "Pero is a builder based in Ghana. He works across 3D modelling, brand identity, Arduino and ESP32 systems, and web development with technical SEO.",
 } as const;
