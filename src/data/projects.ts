@@ -142,13 +142,15 @@ export const projects: Project[] = [
         caption: "The app: instant delivery, mobile money, and every network",
         aspect: "landscape",
       },
-      // TODO: Pero to provide these two, then run
-      // `npm run optimize:images public/work/gheasy`.
       {
-        alt: "gheasy agent dashboard",
-        caption: "The agent dashboard, with wallet and order pipeline",
-        aspect: "portrait",
+        src: "/work/gheasy/agent-dashboard.webp",
+        src2x: "/work/gheasy/agent-dashboard@2x.webp",
+        alt: "The gheasy agent dashboard showing earnings balance and order count, a personal store link, price markup controls, a referral code with points, a WhatsApp support number field and a cashout request",
+        caption: "The agent side: your own storefront, your own prices, your own cashout",
+        aspect: "wide",
       },
+      // TODO: Pero to provide this one, then run
+      // `npm run optimize:images public/work/gheasy`.
       {
         alt: "Easy Games suite",
         caption: "Easy Games, the layer that brings people back",
