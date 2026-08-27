@@ -131,7 +131,7 @@ export const projects: Project[] = [
       { value: "Agent network", label: "Resellers with wallets and margins" },
       { value: "Easy Games", label: "Gamification driving repeat orders" },
     ],
-    liveUrl: "https://gheasy.com",
+    liveUrl: "https://www.gheasy.com",
     images: [
       {
         src: "/work/gheasy/mobile-app.webp",

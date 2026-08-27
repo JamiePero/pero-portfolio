@@ -123,27 +123,20 @@ export function ProjectCaseStudy({
 
           {project.liveUrl ? (
             <Reveal delay={0.14}>
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noreferrer noopener"
-                data-cursor="hover"
-                className="link-underline mt-8 inline-flex items-center gap-2 text-sm font-medium text-accent"
-              >
-                Visit {project.name}
-                <svg
-                  aria-hidden
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-3.5 w-3.5"
+              {/* The same solid button the hero uses. This was a small
+                  underlined text link, which read as a footnote next to the
+                  case study rather than the thing you're meant to click.
+                  MagneticButton sets target and rel itself for an external
+                  href. */}
+              <div className="mt-8">
+                <MagneticButton
+                  href={project.liveUrl}
+                  ariaLabel={`Visit the live ${project.name} site, opens in a new tab`}
                 >
-                  <path d="M7 17 17 7M8 7h9v9" />
-                </svg>
-              </a>
+                  Visit {project.name}
+                  <ExternalIcon />
+                </MagneticButton>
+              </div>
             </Reveal>
           ) : (
             // TODO: Pero to supply a live URL — this note disappears once liveUrl is set.
@@ -421,6 +414,24 @@ function SubHeading({ children }: { children: ReactNode }) {
         {children}
       </h4>
     </Reveal>
+  );
+}
+
+/** Arrow leaving the box, the usual "this opens elsewhere" cue. */
+function ExternalIcon() {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4"
+    >
+      <path d="M7 17 17 7M8 7h9v9" />
+    </svg>
   );
 }
 
