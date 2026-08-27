@@ -67,7 +67,14 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
 
         {/* Pushed to the bottom so cards of different heights line their CTAs up. */}
         <div className="mt-8 pt-1 [margin-top:auto]">
-          {tool.url ? (
+          {/* An in-site page wins over an external URL: a tool with its own page
+              should send people there, where the case for it is actually made. */}
+          {tool.href ? (
+            <MagneticButton to={tool.href} className="px-7">
+              Read more
+              <ArrowIcon />
+            </MagneticButton>
+          ) : tool.url ? (
             <MagneticButton href={tool.url} className="px-7">
               Open tool
               <ExternalIcon />
@@ -97,6 +104,23 @@ function ExternalIcon() {
       className="h-4 w-4"
     >
       <path d="M7 17 17 7M9 7h8v8" />
+    </svg>
+  );
+}
+
+function ArrowIcon() {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4"
+    >
+      <path d="M5 12h14M12 5l7 7-7 7" />
     </svg>
   );
 }

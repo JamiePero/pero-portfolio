@@ -1,6 +1,11 @@
 import { motion, useMotionValue, useSpring, useReducedMotion } from "framer-motion";
 import { useRef, type MouseEvent, type ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+
+/** Hoisted: motion(Link) inside the component body would mint a fresh
+ *  component type on every render, and React would remount the link each time. */
+const MotionLink = motion(Link);
 
 type Variant = "solid" | "outline" | "ghost";
 
@@ -29,6 +34,7 @@ export function MagneticButton({
   children,
   onClick,
   href,
+  to,
   type = "button",
   disabled = false,
   variant = "solid",
@@ -38,7 +44,10 @@ export function MagneticButton({
 }: {
   children: ReactNode;
   onClick?: () => void;
+  /** External or same-document link. Rendered as an anchor. */
   href?: string;
+  /** In-site route. Rendered as a router Link so navigation stays client-side. */
+  to?: string;
   type?: "button" | "submit";
   disabled?: boolean;
   variant?: Variant;
@@ -84,6 +93,22 @@ export function MagneticButton({
     "data-cursor": "hover" as const,
     className: classes,
   };
+
+  // Router link first: an internal route rendered as a plain anchor would drop
+  // the SPA out to a full page load, throwing away the theme transition and the
+  // scroll position along with it.
+  if (to) {
+    return (
+      <MotionLink
+        {...motionProps}
+        ref={ref as React.Ref<HTMLAnchorElement>}
+        to={to}
+        aria-label={ariaLabel}
+      >
+        {children}
+      </MotionLink>
+    );
+  }
 
   if (href) {
     return (

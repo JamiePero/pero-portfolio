@@ -13,6 +13,7 @@ import {
   WorkPage,
 } from "./pages/ContentPages";
 import { HomePage } from "./pages/HomePage";
+import { DcaBotPage } from "./pages/DcaBotPage";
 import { ToolsPage } from "./pages/ToolsPage";
 import { YouTubePage } from "./pages/YouTubePage";
 import { useSmoothScroll } from "./hooks/useSmoothScroll";
@@ -54,6 +55,7 @@ function Shell() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/youtube" element={<YouTubePage />} />
           <Route path="/tools" element={<ToolsPage />} />
+          <Route path="/tools/dca-bot" element={<DcaBotPage />} />
           {/* Anything unrecognised falls back to the main page rather than a
               dead end. */}
           <Route path="*" element={<HomePage />} />
