@@ -262,11 +262,12 @@ export const projects: Project[] = [
           "Automatic collection prioritisation",
           "Route optimisation and analytics",
           "Municipal and company accounts",
+          "A collector app that pays per verified pickup, turning it two-sided",
         ],
       },
     ],
     outlook:
-      "The end of this is not a smart bin. It is a network of them, where the route plans itself around what the bins are actually doing.",
+      "What exists today is V1: a bin that senses how full it is and reports it. Everything from V2 on is where it is headed, not what it does yet. The end of it is not a smart bin. It is a network of them, where the route plans itself around what the bins are actually doing, and the people emptying them get paid per pickup the bin can verify.",
     liveUrl: undefined,
     images: [
       {
@@ -307,8 +308,9 @@ export const projects: Project[] = [
       {
         src: "/work/jexi/collector-app.webp",
         src2x: "/work/jexi/collector-app@2x.webp",
-        alt: "The Jexi collector app on two phones: a home screen showing assigned bins, network average fill and the next priority pickup, and a collection history listing each pickup with the fee earned",
-        caption: "The collector app: which bin to empty next, and what it pays",
+        alt: "Concept design for a Jexi collector app, showing assigned bins, network average fill, the next priority pickup, and a collection history listing a fee against each pickup",
+        caption:
+          "Concept, not built: how paying collectors per verified pickup could work. See the roadmap below.",
         aspect: "landscape",
       },
     ],
