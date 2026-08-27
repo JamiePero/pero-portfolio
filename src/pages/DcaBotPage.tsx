@@ -78,6 +78,14 @@ export function DcaBotPage() {
         {/* The streak is the argument, so it goes first and biggest. */}
         <StreakPanel state={streak} />
 
+        {/* Directly under the streak, because that panel is what prompts the
+            question of whether a user's own buys would be published too. */}
+        <Reveal delay={0.08}>
+          <p className="mt-6 max-w-[62ch] border-l-2 border-accent/40 pl-5 text-base leading-[1.75] text-ink/80">
+            {dcaBot.privacyNote}
+          </p>
+        </Reveal>
+
         <Reveal delay={0.1}>
           <p className="mt-12 max-w-[62ch] text-base leading-[1.75] text-muted sm:text-lg">
             {dcaBot.why}
@@ -184,7 +192,7 @@ function StreakPanel({ state }: { state: Streak }) {
             </p>
           ) : (
             <p className="text-sm text-muted">
-              Every buy is a transaction on Solana. Nothing here is typed in by hand.
+              My wallet, read live off Solana. Nothing here is typed in by hand.
             </p>
           )}
 

@@ -8,26 +8,31 @@
 export const dcaBot = {
   name: "DCA Bot",
   /**
-   * TODO: Pero to provide the bot's wallet address.
-   *
-   * Also set DCA_WALLET in Vercel so the API has it server-side. Until both are
-   * set the page says the streak isn't connected yet rather than showing a
-   * number, which on a page whose whole argument is verifiability matters more
-   * than looking finished.
+   * Pero's own bot wallet. Set DCA_WALLET in Vercel to the same value so the
+   * API has a server-side default. If either is missing the page says the
+   * streak isn't connected rather than showing a number, which on a page whose
+   * whole argument is verifiability matters more than looking finished.
    */
-  wallet: "" as string,
+  wallet: "7dTnbkDKZhofFDe5coSzSoCjex3dihGopqCCJRujXKvb" as string,
 
   token: "$stkr",
   chain: "Solana",
   /** Current daily buy. Total spent is derived from this; see the note below. */
   dailyUsd: 5,
 
-  /** Where the bot posts proof of each buy. */
+  /**
+   * Pero's own feed, where he posts about the run by hand. This is not
+   * something the bot does and not something a user would get: see
+   * privacyNote below.
+   */
   proofUrl: "https://x.com/Itz_Pero",
 
   tagline: "DCA for small Solana token buys.",
   summary:
-    "It buys $5 of $stkr every day on Solana and posts proof of every buy to X. Nothing to watch, nothing to time, and every purchase is on-chain where you can check it.",
+    "It buys a fixed amount of a token on Solana every day, on a schedule, so there's no decision to get wrong. I run it on my own wallet at $5 of $stkr a day, and the streak below is that wallet's real on-chain record.",
+  privacyNote:
+    "That streak is my wallet, not a feature. I publish it because a claim like this is worth nothing if you can't check it. If you end up using the bot, your buys are yours: nothing gets posted anywhere, by me or by it.",
+
   why: "Dollar-cost averaging works because it takes the decision away from you. The tools that do it properly are built for hundreds a day, so if you want to put $1 to $50 into a small Solana token on a schedule, you end up doing it by hand and skipping the days you feel wrong about. That's the gap this fills.",
 } as const;
 
@@ -54,7 +59,7 @@ export const tiers: Tier[] = [
     id: "free",
     name: "Free",
     price: "$0",
-    features: ["Up to $5 a day", "Daily buys", "Public proof posts"],
+    features: ["Up to $5 a day", "Daily buys", "One wallet, one token"],
   },
   {
     id: "pro",

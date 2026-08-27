@@ -77,8 +77,30 @@ export default async function handler(request, response) {
   }
 
   try {
-    // One call covers years of history for a bot buying once a day.
-    const signatures = await rpc("getSignaturesForAddress", [wallet, { limit: 1000 }]);
+    /*
+     * Paginate. One call caps at 1000 signatures, and this wallet already
+     * exceeds that, so a single call reports a floor rather than a total: buy
+     * days and therefore the amount put in would both read low. Walk back with
+     * the `before` cursor until a short page arrives.
+     *
+     * Bounded at five pages. That is 5000 signatures, far more than a
+     * once-a-day bot accumulates, and it means a busy address can never hold
+     * the function open indefinitely.
+     */
+    const signatures = [];
+    let before;
+    let truncated = false;
+
+    for (let page = 0; page < 5; page++) {
+      const batch = await rpc("getSignaturesForAddress", [
+        wallet,
+        before ? { limit: 1000, before } : { limit: 1000 },
+      ]);
+      signatures.push(...batch);
+      if (batch.length < 1000) break;
+      before = batch[batch.length - 1].signature;
+      if (page === 4) truncated = true; // hit the ceiling, older history remains
+    }
 
     const days = [
       ...new Set(
@@ -99,10 +121,11 @@ export default async function handler(request, response) {
       lastBuy,
       buyDays: days.length,
       firstBuy: days[days.length - 1] ?? null,
+      signatures: signatures.length,
       // The chain gives timing, not dollars. Working out what each buy cost in
       // USD would mean fetching and parsing every transaction, so the page
       // multiplies by the configured daily amount and says that it does.
-      truncated: signatures.length >= 1000,
+      truncated,
     });
   } catch (error) {
     response.setHeader("cache-control", "public, s-maxage=60");
