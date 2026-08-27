@@ -15,22 +15,22 @@ export function Footer() {
               aria-label="Back to home"
             >
               <img
-                src="/brand/nav-dark.webp"
-                srcSet="/brand/nav-dark.webp 1x, /brand/nav-dark@2x.webp 2x"
-                width={29}
-                height={36}
+                src="/brand/mark-dark.webp"
+                srcSet="/brand/mark-dark.webp 1x, /brand/mark-dark@2x.webp 2x"
+                width={50}
+                height={44}
                 alt=""
                 decoding="async"
-                className="h-7 w-auto light:hidden"
+                className="h-9 w-auto light:hidden"
               />
               <img
-                src="/brand/nav-light.webp"
-                srcSet="/brand/nav-light.webp 1x, /brand/nav-light@2x.webp 2x"
-                width={29}
-                height={36}
+                src="/brand/mark-light.webp"
+                srcSet="/brand/mark-light.webp 1x, /brand/mark-light@2x.webp 2x"
+                width={50}
+                height={44}
                 alt=""
                 decoding="async"
-                className="hidden h-7 w-auto light:block"
+                className="hidden h-9 w-auto light:block"
               />
               {site.name}
             </Link>

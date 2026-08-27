@@ -1,7 +1,7 @@
 import { AnimatePresence, motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { navRoutes, site } from "../data/site";
+import { navRoutes } from "../data/site";
 import { ThemeToggle } from "./ThemeToggle";
 import type { Theme } from "../hooks/useTheme";
 
@@ -59,27 +59,28 @@ export function Nav({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () 
             className="group flex items-center gap-2 font-display text-lg font-semibold tracking-tight"
             aria-label={onHome ? "Back to top" : "Back to home"}
           >
-            {/* Two files rather than one recoloured with CSS: a filter can't
-                turn white strokes into charcoal ones cleanly. Both are emitted
-                into the same box, so the swap doesn't shift the wordmark.
+            {/* The full mark, orb included. Two files rather than one recoloured
+                with CSS: a filter can't turn white strokes into charcoal ones
+                cleanly, and the orb is a full-colour render that any filter
+                would wreck. Both are emitted into the same box, so the mark
+                doesn't shift or resize when the theme toggles.
 
-                Strokes only. The full mark's accent sphere reads as a detached
-                dot at this size; it's kept for the favicon and OG image, where
-                the mark renders large enough for the two to read as one thing. */}
+                Sized for the orb to read rather than to disguise how detached it
+                sits from the strokes. Without a wordmark beside it there's room,
+                and the orb carries the only colour in the mark. */}
             <img
-              src={theme === "dark" ? "/brand/nav-dark.webp" : "/brand/nav-light.webp"}
+              src={theme === "dark" ? "/brand/mark-dark.webp" : "/brand/mark-light.webp"}
               srcSet={
                 theme === "dark"
-                  ? "/brand/nav-dark.webp 1x, /brand/nav-dark@2x.webp 2x"
-                  : "/brand/nav-light.webp 1x, /brand/nav-light@2x.webp 2x"
+                  ? "/brand/mark-dark.webp 1x, /brand/mark-dark@2x.webp 2x"
+                  : "/brand/mark-light.webp 1x, /brand/mark-light@2x.webp 2x"
               }
-              width={29}
-              height={36}
+              width={50}
+              height={44}
               alt=""
               decoding="async"
-              className="h-9 w-auto"
+              className="h-10 w-auto md:h-11"
             />
-            <span className="hidden sm:inline">{site.name}</span>
           </button>
 
           {/* gap-5 at md, widening at lg: eight destinations is a lot to fit
