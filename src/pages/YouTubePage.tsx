@@ -75,7 +75,6 @@ export function YouTubePage() {
     <section className="relative scroll-mt-24 pb-24 pt-32 md:pb-32 md:pt-40">
       <div className="section-shell">
         <SectionHeading
-          eyebrow="Youtube"
           title="Things I've filmed."
           lead="Builds, breakdowns and whatever I happened to be making at the time. New uploads land here on their own."
         />

@@ -26,9 +26,14 @@ export function Cursor() {
   const ringRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const finePointer = window.matchMedia("(pointer: fine)").matches;
+    // `(pointer: fine)` on its own is not enough. Plenty of Android and hybrid
+    // devices report a fine pointer, for a stylus or a paired mouse or for no
+    // good reason at all, and then the custom cursor mounts on a phone.
+    // `(hover: hover)` is the honest test: a touchscreen can point precisely but
+    // it cannot hover, so requiring both keeps this off touch devices.
+    const pointerDevice = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (finePointer && !reduced) setEnabled(true);
+    if (pointerDevice && !reduced) setEnabled(true);
   }, []);
 
   useEffect(() => {
@@ -48,6 +53,14 @@ export function Cursor() {
     const HOVER_SELECTOR = 'a, button, input, textarea, select, [data-cursor="hover"]';
 
     const onMove = (event: PointerEvent) => {
+      // A tap fires pointermove with pointerType "touch". Without this check
+      // that reveals the cursor and parks it at the tap coordinates, and because
+      // pointerleave never fires for touch it then stays there for good. That's
+      // the "stray dot": not an artefact, but the cursor stranded wherever the
+      // screen was last touched, which is why it turned up in a new place each
+      // time. Only a real mouse drives it.
+      if (event.pointerType !== "mouse") return;
+
       const transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0) translate(-50%, -50%)`;
       dot.style.transform = transform;
       ring.style.transform = transform;
@@ -82,10 +95,15 @@ export function Cursor() {
 
     window.addEventListener("pointermove", onMove, { passive: true });
     document.addEventListener("pointerleave", onLeave);
+    // Belt and braces on a hybrid device: if someone with a mouse attached also
+    // touches the screen, retire the cursor rather than leaving it behind at the
+    // mouse's last position.
+    window.addEventListener("touchstart", onLeave, { passive: true });
 
     return () => {
       window.removeEventListener("pointermove", onMove);
       document.removeEventListener("pointerleave", onLeave);
+      window.removeEventListener("touchstart", onLeave);
       delete document.body.dataset.customCursor;
     };
   }, [enabled]);

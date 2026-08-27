@@ -11,7 +11,6 @@ export function Services() {
     <section id="services" className="relative scroll-mt-24 py-24 md:py-32">
       <div className="section-shell">
         <SectionHeading
-          eyebrow="04 / Services"
           title="What you can hire me for."
           lead="Four things I do properly. Most projects end up needing two or three of them at once, which is usually the point of hiring one person instead of three."
         />

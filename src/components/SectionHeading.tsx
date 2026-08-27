@@ -1,12 +1,20 @@
-import { Reveal, RevealWords } from "./Reveal";
+import { RevealWords } from "./Reveal";
 
+/**
+ * The heading block every page opens with.
+ *
+ * There used to be a numbered label above the title, "01 / About" and so on. It
+ * made sense when these were sections of one scrolling page and the number told
+ * you where you were in a sequence. Now that each is its own route the nav
+ * already marks the current page, so the label was the same information twice.
+ * Removed from the component rather than from each caller, so a page can't
+ * reintroduce one.
+ */
 export function SectionHeading({
-  eyebrow,
   title,
   lead,
   align = "left",
 }: {
-  eyebrow: string;
   title: string;
   lead?: string;
   align?: "left" | "center";
@@ -15,25 +23,17 @@ export function SectionHeading({
 
   return (
     <div className={`flex flex-col ${alignment}`}>
-      <Reveal>
-        <span className="eyebrow flex items-center gap-3">
-          <span aria-hidden className="inline-block h-px w-8 bg-accent" />
-          {eyebrow}
-        </span>
-      </Reveal>
-
       <RevealWords
         as="h2"
         text={title}
-        delay={0.08}
-        className="mt-5 max-w-[18ch] text-4xl font-semibold leading-[1.05] sm:text-5xl md:text-6xl"
+        className="max-w-[18ch] text-4xl font-semibold leading-[1.05] sm:text-5xl md:text-6xl"
       />
 
       {lead ? (
         <RevealWords
           text={lead}
           stagger={0.012}
-          delay={0.2}
+          delay={0.12}
           className="mt-6 max-w-[58ch] text-base leading-relaxed text-muted sm:text-lg"
         />
       ) : null}

@@ -13,7 +13,6 @@ export function ToolsPage() {
     <section className="relative scroll-mt-24 pb-24 pt-32 md:pb-32 md:pt-40">
       <div className="section-shell">
         <SectionHeading
-          eyebrow="Tools"
           title="Things you can actually use."
           lead="Small utilities I built for myself and then cleaned up enough to share. These are meant to be opened and used, not just read about."
         />

@@ -72,7 +72,6 @@ export function Contact() {
     <section id="contact" className="relative scroll-mt-24 py-24 md:py-32">
       <div className="section-shell">
         <SectionHeading
-          eyebrow="06 / Contact"
           title="Got something you want built?"
           lead="I take freelance and client work across any of it: 3D, branding, hardware, web. Tell me what you're trying to make and I'll tell you straight whether I'm the right person for it."
         />

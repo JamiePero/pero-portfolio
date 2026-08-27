@@ -8,7 +8,6 @@ export function Projects() {
     <section id="work" className="relative scroll-mt-24 py-24 md:py-32">
       <div className="section-shell">
         <SectionHeading
-          eyebrow="02 / Selected work"
           title="Things I built and actually shipped."
           lead="Three platforms, three different problems. Each one went from an idea to something people actually use, hardware and payments and design systems and all."
         />

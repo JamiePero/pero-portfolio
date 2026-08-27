@@ -83,7 +83,6 @@ export function PricingBuilder() {
 
       <div className="section-shell">
         <SectionHeading
-          eyebrow="05 / Pricing"
           title="Want a website? Let's build one."
           lead="Answer three questions and you'll get an indicative range in about twenty seconds. It's a starting point for a conversation, not a final invoice."
         />

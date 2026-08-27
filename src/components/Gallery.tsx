@@ -26,7 +26,6 @@ export function Gallery() {
     <section id="gallery" className="relative scroll-mt-24 py-24 md:py-32">
       <div className="section-shell">
         <SectionHeading
-          eyebrow="03 / Design"
           title="Renders, marks and packaging."
           lead="The visual half of the work. 3D product modelling, identity systems, and packaging taken all the way through to production artwork."
         />

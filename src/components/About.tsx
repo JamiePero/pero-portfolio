@@ -21,7 +21,7 @@ export function About() {
   return (
     <section id="about" className="relative scroll-mt-24 py-24 md:py-36">
       <div className="section-shell">
-        <SectionHeading eyebrow="01 / About" title="I build across the whole stack. Literally." />
+        <SectionHeading title="I build across the whole stack. Literally." />
 
         <div className="mt-14 grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20">
           <div className="space-y-6">
