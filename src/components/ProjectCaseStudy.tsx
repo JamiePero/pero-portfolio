@@ -1,4 +1,4 @@
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { useRef, useState, type ReactNode } from "react";
 import type { Project, ProjectImage } from "../data/projects";
 import { MagneticButton } from "./MagneticButton";
@@ -29,6 +29,11 @@ export function ProjectCaseStudy({
   });
   // Subtle counter-drift on the section number so the pinned column isn't dead.
   const markY = useTransform(scrollYProgress, [0, 1], ["-12%", "12%"]);
+
+  // One control for the whole case study. The narrative prose and the deep
+  // sections below were governed separately, which put two "read more" buttons
+  // on Jexi and buried the scannable summary under paragraphs on the others.
+  const [expanded, setExpanded] = useState(false);
 
   return (
     <article
@@ -72,13 +77,13 @@ export function ProjectCaseStudy({
             <p className="mt-2 font-mono text-xs text-muted">{project.year}</p>
           </Reveal>
 
-          <div className="mt-9 space-y-7">
-            <Block label="The problem" body={project.problem} />
-            <Block label="What I built" body={project.solution} />
-          </div>
+          <Collapsible open={expanded} reduced={Boolean(reduced)}>
+            <div className="mt-9 space-y-7">
+              <Block label="The problem" body={project.problem} />
+              <Block label="What I built" body={project.solution} />
+            </div>
 
-          {project.highlights?.length ? (
-            <Reveal delay={0.1}>
+            {project.highlights?.length ? (
               <ul className="mt-8 space-y-3">
                 {project.highlights.map((highlight) => (
                   <li key={highlight} className="flex gap-3 text-sm leading-relaxed text-muted">
@@ -90,8 +95,8 @@ export function ProjectCaseStudy({
                   </li>
                 ))}
               </ul>
-            </Reveal>
-          ) : null}
+            ) : null}
+          </Collapsible>
 
           <Reveal delay={0.1}>
             <ul className="mt-8 flex flex-wrap gap-2">
@@ -107,13 +112,13 @@ export function ProjectCaseStudy({
           </Reveal>
 
           <Reveal delay={0.12}>
-            <dl className="mt-9 grid grid-cols-3 gap-4 border-t border-line pt-7">
+            <dl className="mt-9 grid grid-cols-3 gap-px overflow-hidden rounded-2xl border border-line bg-line">
               {project.impact.map((item) => (
                 // col-reverse puts the value above its label visually while
                 // keeping the required dt-before-dd source order.
-                <div key={item.label} className="flex flex-col-reverse gap-1.5">
-                  <dt className="text-xs leading-snug text-muted">{item.label}</dt>
-                  <dd className="font-display text-lg font-semibold leading-tight text-ink sm:text-xl">
+                <div key={item.label} className="flex flex-col-reverse gap-1.5 bg-elevated p-4 sm:p-5">
+                  <dt className="text-[11px] leading-snug text-muted">{item.label}</dt>
+                  <dd className="font-display text-xl font-bold leading-tight text-accent sm:text-2xl">
                     {item.value}
                   </dd>
                 </div>
@@ -146,6 +151,19 @@ export function ProjectCaseStudy({
               </p>
             </Reveal>
           )}
+
+          <Reveal delay={0.16}>
+            <button
+              type="button"
+              onClick={() => setExpanded((open) => !open)}
+              aria-expanded={expanded}
+              data-cursor="hover"
+              className="link-underline mt-7 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em] text-muted transition-colors hover:text-accent"
+            >
+              {expanded ? "Show less" : "Expand for details"}
+              <Chevron flipped={expanded} />
+            </button>
+          </Reveal>
         </div>
 
         {/* ---------- Visual column (scrolls past the pinned copy) ---------- */}
@@ -186,7 +204,7 @@ export function ProjectCaseStudy({
         </div>
       </div>
 
-      <ExtendedSections project={project} />
+      <ExtendedSections project={project} expanded={expanded} />
     </article>
   );
 }
@@ -200,26 +218,13 @@ export function ProjectCaseStudy({
  * Every section is opt-in, so a project that doesn't supply the data renders
  * nothing extra and keeps the original compact layout.
  */
-function ExtendedSections({ project }: { project: Project }) {
+function ExtendedSections({ project, expanded }: { project: Project; expanded: boolean }) {
   const { features, hardware, flow, callout, roadmap, outlook } = project;
   if (!features && !hardware && !flow && !callout && !roadmap) return null;
 
-  // The deep detail below the feature grid is collapsed by default so a
-  // content-heavy case study (Jexi) doesn't tower over the others. Only worth a
-  // toggle when that deeper detail actually exists.
-  const hasDeepDetail = Boolean(flow?.length || hardware?.length || callout || roadmap?.length);
-  const [expanded, setExpanded] = useState(false);
-  const showDeep = !hasDeepDetail || expanded;
-
-  // Names the section kinds hidden behind the toggle, so the button says what
-  // it opens instead of being a blind "read more".
-  const hiddenHint = [
-    flow?.length ? "how it works" : null,
-    hardware?.length ? "hardware" : null,
-    roadmap?.length ? "roadmap" : null,
-  ]
-    .filter(Boolean)
-    .join(" · ");
+  // Everything here is deep detail, so the whole block follows the one toggle
+  // in the narrative column rather than carrying a second control of its own.
+  if (!expanded) return null;
 
   return (
     <div className="mt-16 space-y-16 border-t border-line pt-14 md:mt-24 md:space-y-20 md:pt-20">
@@ -241,26 +246,7 @@ function ExtendedSections({ project }: { project: Project }) {
         </section>
       ) : null}
 
-      {hasDeepDetail && !expanded ? (
-        <div className="flex flex-col items-center gap-3">
-          <MagneticButton
-            variant="outline"
-            onClick={() => setExpanded(true)}
-            className="px-7"
-            ariaLabel={`Read the full ${project.name} breakdown`}
-          >
-            Read the full breakdown
-            <CollapseChevron flipped={false} />
-          </MagneticButton>
-          {hiddenHint ? (
-            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted opacity-60">
-              {hiddenHint}
-            </p>
-          ) : null}
-        </div>
-      ) : null}
-
-      {showDeep && flow?.length ? (
+      {flow?.length ? (
         <section>
           <SubHeading>How it works</SubHeading>
           <ol className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -280,7 +266,7 @@ function ExtendedSections({ project }: { project: Project }) {
         </section>
       ) : null}
 
-      {showDeep && hardware?.length ? (
+      {hardware?.length ? (
         <section>
           <SubHeading>What's inside</SubHeading>
           <Reveal>
@@ -315,7 +301,7 @@ function ExtendedSections({ project }: { project: Project }) {
         </section>
       ) : null}
 
-      {showDeep && callout ? (
+      {callout ? (
         <Reveal>
           <aside className="rounded-2xl border border-accent/30 bg-accent/[0.06] p-7 md:p-10">
             <h4 className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">
@@ -328,7 +314,7 @@ function ExtendedSections({ project }: { project: Project }) {
         </Reveal>
       ) : null}
 
-      {showDeep && roadmap?.length ? (
+      {roadmap?.length ? (
         <section>
           <SubHeading>Where it goes next</SubHeading>
           <ol className="mt-8 grid gap-5 md:grid-cols-3">
@@ -371,35 +357,55 @@ function ExtendedSections({ project }: { project: Project }) {
           ) : null}
         </section>
       ) : null}
-
-      {hasDeepDetail && expanded ? (
-        <div className="flex justify-center">
-          <MagneticButton
-            variant="outline"
-            onClick={() => setExpanded(false)}
-            className="px-7"
-            ariaLabel="Collapse the breakdown"
-          >
-            Show less
-            <CollapseChevron flipped />
-          </MagneticButton>
-        </div>
-      ) : null}
     </div>
   );
 }
 
-function CollapseChevron({ flipped }: { flipped: boolean }) {
+/**
+ * Height animation for the collapsed detail.
+ *
+ * Animating to "auto" is the only way to do this without hard-coding a height,
+ * and overflow-hidden keeps the contents clipped while the box is shrinking.
+ * Reduced motion gets the same show/hide with no travel.
+ */
+function Collapsible({
+  open,
+  reduced,
+  children,
+}: {
+  open: boolean;
+  reduced: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <AnimatePresence initial={false}>
+      {open ? (
+        <motion.div
+          key="detail"
+          initial={reduced ? { opacity: 0 } : { height: 0, opacity: 0 }}
+          animate={reduced ? { opacity: 1 } : { height: "auto", opacity: 1 }}
+          exit={reduced ? { opacity: 0 } : { height: 0, opacity: 0 }}
+          transition={{ duration: reduced ? 0 : 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="overflow-hidden"
+        >
+          {children}
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
+  );
+}
+
+function Chevron({ flipped }: { flipped: boolean }) {
   return (
     <svg
       aria-hidden
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.8"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`h-4 w-4 transition-transform duration-300 ${flipped ? "rotate-180" : ""}`}
+      className={`h-3.5 w-3.5 transition-transform duration-300 ${flipped ? "rotate-180" : ""}`}
     >
       <path d="m6 9 6 6 6-6" />
     </svg>
