@@ -11,7 +11,7 @@ export function Footer() {
           <div>
             <Link
               to="/"
-              className="flex items-center gap-2 font-display text-xl font-semibold tracking-tight"
+              className="inline-flex items-center"
               aria-label="Back to home"
             >
               <img
@@ -32,7 +32,6 @@ export function Footer() {
                 decoding="async"
                 className="hidden h-9 w-auto light:block"
               />
-              {site.name}
             </Link>
             <p className="mt-3 max-w-[34ch] text-sm leading-relaxed text-muted">
               Building across hardware, software and design from {site.location}.
