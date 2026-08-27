@@ -88,8 +88,7 @@ export const projects: Project[] = [
       { value: "USSD + MoMo", label: "Works without a smartphone or card" },
       { value: "Minutes", label: "From router plugged in to first sale" },
     ],
-    // TODO: Pero to provide the live FlashX URL if it's public.
-    liveUrl: undefined,
+    liveUrl: "https://app.getflashx.com",
     images: [
       {
         src: "/work/flashx/mobile-app.webp",
@@ -132,8 +131,7 @@ export const projects: Project[] = [
       { value: "Agent network", label: "Resellers with wallets and margins" },
       { value: "Easy Games", label: "Gamification driving repeat orders" },
     ],
-    // TODO: Pero to provide the live gheasy URL if it's public.
-    liveUrl: undefined,
+    liveUrl: "https://gheasy.com",
     images: [
       {
         src: "/work/gheasy/mobile-app.webp",
@@ -306,13 +304,12 @@ export const projects: Project[] = [
         caption: "How the electronics hang together, from sensor to SMS",
         aspect: "wide",
       },
-      // TODO: Pero to supply the Blynk dashboard screenshot, then run
-      // `npm run optimize:images public/work/jexi` and point this at the .webp
-      // pair it produces. Renders as a pending frame until then.
       {
-        alt: "The Blynk dashboard showing live fill level and location for a Jexi bin",
-        caption: "The Blynk dashboard, reading a bin live",
-        aspect: "wide",
+        src: "/work/jexi/collector-app.webp",
+        src2x: "/work/jexi/collector-app@2x.webp",
+        alt: "The Jexi collector app on two phones: a home screen showing assigned bins, network average fill and the next priority pickup, and a collection history listing each pickup with the fee earned",
+        caption: "The collector app: which bin to empty next, and what it pays",
+        aspect: "landscape",
       },
     ],
   },

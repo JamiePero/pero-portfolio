@@ -1,4 +1,5 @@
 import { projects } from "../data/projects";
+import { ClientSites, ClientSitesNote } from "./ClientSites";
 import { ProjectCaseStudy } from "./ProjectCaseStudy";
 import { SectionHeading } from "./SectionHeading";
 import { SmartBinSection } from "./SmartBinSection";
@@ -24,6 +25,9 @@ export function Projects() {
             />
           ))}
         </div>
+
+        <ClientSites />
+        <ClientSitesNote />
       </div>
     </section>
   );
