@@ -8,7 +8,7 @@ import {
   timelines,
   type PriceRange,
 } from "../data/pricing";
-import { scrollToSection } from "../hooks/useSmoothScroll";
+import { useNavigate } from "react-router-dom";
 import { MagneticButton } from "./MagneticButton";
 import { Reveal } from "./Reveal";
 import { SectionHeading } from "./SectionHeading";
@@ -23,6 +23,7 @@ const STEPS = [
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 export function PricingBuilder() {
+  const navigate = useNavigate();
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(0);
   // Tracks which way the panels should slide.
@@ -71,7 +72,7 @@ export function PricingBuilder() {
     ].join("\n");
 
     window.dispatchEvent(new CustomEvent<string>("pero:quote", { detail: summary }));
-    scrollToSection("contact");
+    navigate("/contact");
   }
 
   const canAdvance = step === 0 ? Boolean(typeId) : true;

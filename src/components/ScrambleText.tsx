@@ -6,7 +6,15 @@ import { useEffect, useRef, useState } from "react";
  * reads as corrupted text rather than as an effect, and it's the first thing a
  * visitor sees.
  */
-const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+/**
+ * Lowercase and digits, no capitals.
+ *
+ * The roles being cycled are Title Case, so a capital landing mid-word made a
+ * half-resolved word read as corrupted text rather than as an effect:
+ * "Hardware Tinkerer" passing through "Hardware TinkVUFA" looks like a
+ * rendering fault. Lowercase glyphs preserve the word's shape while it settles.
+ */
+const GLYPHS = "abcdefghijklmnopqrstuvwxyz0123456789";
 
 /** Scramble steps per second. Independent of the display's frame rate. */
 const TICK_HZ = 30;

@@ -1,5 +1,5 @@
-import { navSections, site } from "../data/site";
-import { scrollToSection } from "../hooks/useSmoothScroll";
+import { Link } from "react-router-dom";
+import { navRoutes, site } from "../data/site";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -9,17 +9,31 @@ export function Footer() {
       <div className="section-shell">
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
           <div>
-            <button
-              type="button"
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            <Link
+              to="/"
               className="flex items-center gap-2 font-display text-xl font-semibold tracking-tight"
-              aria-label="Back to top"
+              aria-label="Back to home"
             >
-              <span className="grid h-7 w-7 place-items-center rounded-md bg-accent font-mono text-xs font-bold text-on-accent">
-                P
-              </span>
+              <img
+                src="/brand/nav-dark.webp"
+                srcSet="/brand/nav-dark.webp 1x, /brand/nav-dark@2x.webp 2x"
+                width={29}
+                height={36}
+                alt=""
+                decoding="async"
+                className="h-7 w-auto light:hidden"
+              />
+              <img
+                src="/brand/nav-light.webp"
+                srcSet="/brand/nav-light.webp 1x, /brand/nav-light@2x.webp 2x"
+                width={29}
+                height={36}
+                alt=""
+                decoding="async"
+                className="hidden h-7 w-auto light:block"
+              />
               {site.name}
-            </button>
+            </Link>
             <p className="mt-3 max-w-[34ch] text-sm leading-relaxed text-muted">
               Building across hardware, software and design from {site.location}.
             </p>
@@ -27,16 +41,15 @@ export function Footer() {
 
           <nav aria-label="Footer">
             <ul className="grid grid-cols-2 gap-x-10 gap-y-2.5 sm:grid-cols-3 md:grid-cols-2">
-              {navSections.map((section) => (
-                <li key={section.id}>
-                  <button
-                    type="button"
-                    onClick={() => scrollToSection(section.id)}
+              {navRoutes.map((route) => (
+                <li key={route.path}>
+                  <Link
+                    to={route.path}
                     data-cursor="hover"
                     className="link-underline text-sm text-muted transition-colors hover:text-ink"
                   >
-                    {section.label}
-                  </button>
+                    {route.label}
+                  </Link>
                 </li>
               ))}
             </ul>

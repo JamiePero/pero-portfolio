@@ -1,11 +1,12 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { useState } from "react";
 import { services, type Service } from "../data/services";
-import { scrollToSection } from "../hooks/useSmoothScroll";
+import { useNavigate } from "react-router-dom";
 import { MagneticButton } from "./MagneticButton";
 import { SectionHeading } from "./SectionHeading";
 
 export function Services() {
+  const navigate = useNavigate();
   return (
     <section id="services" className="relative scroll-mt-24 py-24 md:py-32">
       <div className="section-shell">
@@ -22,7 +23,7 @@ export function Services() {
         </ul>
 
         <div className="mt-12 flex flex-wrap items-center gap-4">
-          <MagneticButton onClick={() => scrollToSection("pricing")}>
+          <MagneticButton onClick={() => navigate("/pricing")}>
             Price up a project
           </MagneticButton>
           <p className="text-sm text-muted">Or skip ahead and just message me.</p>

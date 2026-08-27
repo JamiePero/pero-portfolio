@@ -34,17 +34,20 @@ export const heroRoles = [
  * Nav items that live on their own route rather than being a scroll target on
  * the main page. Rendered after the section links.
  */
+/**
+ * Every nav destination, in order.
+ *
+ * These were anchors on one long scrolling page until visitors reported it ran
+ * too long. Each is now a real route, so it has its own URL that can be linked,
+ * shared and indexed separately.
+ */
 export const navRoutes = [
+  { path: "/about", label: "About" },
+  { path: "/work", label: "Work" },
+  { path: "/design", label: "Design" },
+  { path: "/services", label: "Services" },
+  { path: "/pricing", label: "Pricing" },
+  { path: "/contact", label: "Contact" },
   { path: "/youtube", label: "Youtube" },
   { path: "/tools", label: "Tools" },
-] as const;
-
-/** Nav + scroll-spy targets. Order matches the section order on the page. */
-export const navSections = [
-  { id: "about", label: "About" },
-  { id: "work", label: "Work" },
-  { id: "gallery", label: "Design" },
-  { id: "services", label: "Services" },
-  { id: "pricing", label: "Pricing" },
-  { id: "contact", label: "Contact" },
 ] as const;

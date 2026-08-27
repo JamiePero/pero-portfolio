@@ -1,17 +1,9 @@
 import { AnimatePresence, motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { navRoutes, navSections, site } from "../data/site";
-import { scrollToSection } from "../hooks/useSmoothScroll";
-import { useActiveSection } from "../hooks/useActiveSection";
+import { navRoutes, site } from "../data/site";
 import { ThemeToggle } from "./ThemeToggle";
 import type { Theme } from "../hooks/useTheme";
-
-const sectionIds = navSections.map((section) => section.id);
-// Module-level constant, not an inline []: useActiveSection keys its effect on
-// the array identity, so a fresh literal each render would tear down and rebuild
-// the IntersectionObserver every time.
-const NO_SECTIONS: readonly string[] = [];
 
 export function Nav({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () => void }) {
   const [scrolled, setScrolled] = useState(false);
@@ -20,34 +12,22 @@ export function Nav({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () 
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const onHome = pathname === "/";
-  // Scroll-spy is meaningless off the main page, so don't run it there.
-  const active = useActiveSection(onHome ? sectionIds : NO_SECTIONS);
 
-  // The nav only materialises once the hero is behind you.
+  // On the homepage the nav only materialises once the hero is behind you. On
+  // every other route there's no hero to sit over, so it's solid immediately.
   useMutedScrollState(scrollY, setScrolled);
+  const solid = scrolled || !onHome;
 
-  /**
-   * Section links have to work from anywhere. On the main page that's a scroll;
-   * from another route it's a navigation to `/#id`, and HomePage scrolls once
-   * the sections have laid out.
-   */
-  function goTo(id: string) {
-    setMenuOpen(false);
-    if (onHome) {
-      scrollToSection(id);
-    } else {
-      navigate(`/#${id}`);
-    }
-  }
+  // Scroll-spy is gone: the current route says which item is active, which is
+  // both cheaper and correct, since a section is now a page rather than a
+  // position on one.
 
   return (
     <>
+      {/* Targets the page's own <main>, which is the content on every route,
+          rather than a section that now only exists on /about. */}
       <a
-        href="#about"
-        onClick={(event) => {
-          event.preventDefault();
-          goTo("about");
-        }}
+        href="#main"
         className="sr-only rounded-full bg-accent px-4 py-2 text-on-accent focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[110]"
       >
         Skip to content
@@ -58,7 +38,7 @@ export function Nav({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () 
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.9 }}
         className={`fixed inset-x-0 top-0 z-50 ${
-          scrolled
+          solid
             ? "border-b border-line bg-bg/80 backdrop-blur-xl backdrop-saturate-150"
             : "border-b border-transparent bg-transparent"
         }`}
@@ -79,17 +59,21 @@ export function Nav({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () 
             className="group flex items-center gap-2 font-display text-lg font-semibold tracking-tight"
             aria-label={onHome ? "Back to top" : "Back to home"}
           >
-            {/* Two files rather than one recoloured with CSS: the mark's accent
-                sphere is a full-colour render, so a filter would wreck it. Both
-                are padded to the same box, so the swap doesn't shift the layout. */}
+            {/* Two files rather than one recoloured with CSS: a filter can't
+                turn white strokes into charcoal ones cleanly. Both are emitted
+                into the same box, so the swap doesn't shift the wordmark.
+
+                Strokes only. The full mark's accent sphere reads as a detached
+                dot at this size; it's kept for the favicon and OG image, where
+                the mark renders large enough for the two to read as one thing. */}
             <img
-              src={theme === "dark" ? "/brand/mark-dark.webp" : "/brand/mark-light.webp"}
+              src={theme === "dark" ? "/brand/nav-dark.webp" : "/brand/nav-light.webp"}
               srcSet={
                 theme === "dark"
-                  ? "/brand/mark-dark.webp 1x, /brand/mark-dark@2x.webp 2x"
-                  : "/brand/mark-light.webp 1x, /brand/mark-light@2x.webp 2x"
+                  ? "/brand/nav-dark.webp 1x, /brand/nav-dark@2x.webp 2x"
+                  : "/brand/nav-light.webp 1x, /brand/nav-light@2x.webp 2x"
               }
-              width={41}
+              width={29}
               height={36}
               alt=""
               decoding="async"
@@ -98,20 +82,9 @@ export function Nav({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () 
             <span className="hidden sm:inline">{site.name}</span>
           </button>
 
-          <ul className="hidden items-center gap-7 md:flex">
-            {navSections.map((section) => (
-              <li key={section.id}>
-                <button
-                  type="button"
-                  onClick={() => goTo(section.id)}
-                  data-active={onHome && active === section.id}
-                  data-cursor="hover"
-                  className="link-underline text-sm text-muted transition-colors duration-300 hover:text-ink data-[active=true]:text-ink"
-                >
-                  {section.label}
-                </button>
-              </li>
-            ))}
+          {/* gap-5 at md, widening at lg: eight destinations is a lot to fit
+              between the logo and the theme toggle on a narrow laptop. */}
+          <ul className="hidden items-center gap-5 md:flex lg:gap-7">
             {navRoutes.map((route) => (
               <li key={route.path}>
                 <Link
@@ -169,42 +142,21 @@ export function Nav({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () 
               className="overflow-hidden border-t border-line bg-bg/95 backdrop-blur-xl md:hidden"
             >
               <ul className="section-shell flex flex-col py-4">
-                {navSections.map((section, index) => (
-                  <motion.li
-                    key={section.id}
-                    initial={{ opacity: 0, x: -12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.04 * index, duration: 0.3 }}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => goTo(section.id)}
-                      className="w-full border-b border-line py-3.5 text-left font-display text-lg text-ink"
-                    >
-                      <span className="mr-3 font-mono text-xs text-accent">
-                        0{index + 1}
-                      </span>
-                      {section.label}
-                    </button>
-                  </motion.li>
-                ))}
                 {navRoutes.map((route, index) => (
                   <motion.li
                     key={route.path}
                     initial={{ opacity: 0, x: -12 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{
-                      delay: 0.04 * (navSections.length + index),
-                      duration: 0.3,
-                    }}
+                    transition={{ delay: 0.04 * index, duration: 0.3 }}
                   >
                     <Link
                       to={route.path}
                       onClick={() => setMenuOpen(false)}
-                      className="block w-full border-b border-line py-3.5 text-left font-display text-lg text-ink"
+                      aria-current={pathname === route.path ? "page" : undefined}
+                      className="block w-full border-b border-line py-3.5 text-left font-display text-lg text-ink aria-[current=page]:text-accent"
                     >
                       <span className="mr-3 font-mono text-xs text-accent">
-                        0{navSections.length + index + 1}
+                        {String(index + 1).padStart(2, "0")}
                       </span>
                       {route.label}
                     </Link>

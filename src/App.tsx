@@ -4,6 +4,14 @@ import { CapabilityDebug } from "./components/CapabilityDebug";
 import { Cursor } from "./components/Cursor";
 import { Footer } from "./components/Footer";
 import { Nav } from "./components/Nav";
+import {
+  AboutPage,
+  ContactPage,
+  DesignPage,
+  PricingPage,
+  ServicesPage,
+  WorkPage,
+} from "./pages/ContentPages";
 import { HomePage } from "./pages/HomePage";
 import { ToolsPage } from "./pages/ToolsPage";
 import { YouTubePage } from "./pages/YouTubePage";
@@ -35,9 +43,15 @@ function Shell() {
       <ScrollToTopOnRouteChange />
       <Cursor />
       <Nav theme={theme} onToggleTheme={toggle} />
-      <main>
+      <main id="main">
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/work" element={<WorkPage />} />
+          <Route path="/design" element={<DesignPage />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route path="/youtube" element={<YouTubePage />} />
           <Route path="/tools" element={<ToolsPage />} />
           {/* Anything unrecognised falls back to the main page rather than a

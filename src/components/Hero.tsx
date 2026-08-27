@@ -2,7 +2,7 @@ import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { heroRoles, site } from "../data/site";
 import { canRenderHeroGlass } from "@/lib/capabilities";
-import { scrollToSection } from "../hooks/useSmoothScroll";
+import { useNavigate } from "react-router-dom";
 import { MagneticButton } from "./MagneticButton";
 import { ScrambleText } from "./ScrambleText";
 import { HeroBlobFallback } from "./HeroBlobFallback";
@@ -26,6 +26,7 @@ function canRenderGlass(): boolean {
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
+  const navigate = useNavigate();
   const [useGlass, setUseGlass] = useState(false);
   /** The 3D scene has painted — begin the cross-fade. */
   const [ribbonReady, setRibbonReady] = useState(false);
@@ -203,7 +204,7 @@ export function Hero() {
             className="mt-11 flex flex-wrap items-center gap-3.5"
           >
             <MagneticButton
-              onClick={() => scrollToSection("work")}
+              onClick={() => navigate("/work")}
               className="px-8 py-4 text-base"
             >
               View Work
@@ -211,7 +212,7 @@ export function Hero() {
             </MagneticButton>
             <MagneticButton
               variant="outline"
-              onClick={() => scrollToSection("contact")}
+              onClick={() => navigate("/contact")}
               className="px-8 py-4 text-base"
             >
               Get in Touch
@@ -220,22 +221,9 @@ export function Hero() {
         </div>
       </motion.div>
 
-      <motion.button
-        type="button"
-        onClick={() => scrollToSection("about")}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 1.4 }}
-        aria-label="Scroll to about section"
-        className="absolute bottom-7 left-5 z-10 hidden flex-col items-center gap-2 text-muted transition-colors duration-300 hover:text-accent md:left-10 lg:flex"
-      >
-        <span className="font-mono text-[10px] uppercase tracking-[0.22em]">Scroll</span>
-        <motion.span
-          animate={reduced ? undefined : { y: [0, 7, 0] }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-          className="block h-8 w-px bg-current opacity-50"
-        />
-      </motion.button>
+      {/* The scroll cue lived here. Removed with the move to separate pages:
+          the homepage is now just the hero, so there's nothing below to scroll
+          to and the indicator pointed at content that had moved to /about. */}
     </section>
   );
 }
