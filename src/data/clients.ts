@@ -30,7 +30,7 @@ export const clientSites: ClientSite[] = [
     url: "https://www.californiasheds.com",
     src: "/work/clients/california-sheds.webp",
     src2x: "/work/clients/california-sheds@2x.webp",
-    alt: "The California Sheds website",
+    alt: "The California Sheds homepage, a shed and garage builder in Sacramento",
   },
   {
     id: "mtf-hub",
@@ -51,11 +51,9 @@ export const clientSites: ClientSite[] = [
     kind: "Plumbing services",
     description: "Repairs and installs for a local plumbing outfit, built to bring in call-outs.",
     url: "https://nor-cal-plumbing.com",
-    // TODO: preview pending. The site's own og:image is a signed Google Cloud
-    // URL that expired on 2026-03-14 and now returns 403, so there was nothing
-    // to download. A screenshot would fix both this and the site's own broken
-    // social previews.
-    alt: "The Nor-Cal Plumbing website",
+    src: "/work/clients/nor-cal-plumbing.webp",
+    src2x: "/work/clients/nor-cal-plumbing@2x.webp",
+    alt: "The Nor-Cal Plumbing homepage, showing a 24/7 emergency call-out banner and jobs completed",
   },
   {
     id: "boss-don-nft",
@@ -64,8 +62,8 @@ export const clientSites: ClientSite[] = [
     description:
       "A limited run of 111 pieces in the SkillStacker ecosystem, where access is earned rather than bought.",
     url: "https://boss-don-nft.lovable.app",
-    // TODO: preview pending. Same as Nor-Cal: the site's og:image signature
-    // expired on 2026-03-10 and returns 403.
-    alt: "The Boss Don NFT website",
+    src: "/work/clients/boss-don-nft.webp",
+    src2x: "/work/clients/boss-don-nft@2x.webp",
+    alt: "The Boss Don NFT site, showing a row of crowned knight artworks above the collection statement",
   },
 ];
