@@ -149,12 +149,12 @@ export const projects: Project[] = [
         caption: "The agent side: your own storefront, your own prices, your own cashout",
         aspect: "wide",
       },
-      // TODO: Pero to provide this one, then run
-      // `npm run optimize:images public/work/gheasy`.
       {
-        alt: "Easy Games suite",
-        caption: "Easy Games, the layer that brings people back",
-        aspect: "portrait",
+        src: "/work/gheasy/easy-games.webp",
+        src2x: "/work/gheasy/easy-games@2x.webp",
+        alt: "The Easy Games suite on two phones: easy Wheel, a spin-to-win wheel with data prizes from 100MB to 1GB, and Jumpy Bear, a platform jumper scored against a personal best",
+        caption: "Easy Games: spin the wheel, win data, come back tomorrow",
+        aspect: "landscape",
       },
     ],
   },
