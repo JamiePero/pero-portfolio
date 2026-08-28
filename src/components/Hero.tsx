@@ -99,7 +99,18 @@ export function Hero() {
       <motion.div
         aria-hidden
         style={reduced ? undefined : { y: blobY }}
-        className="pointer-events-none absolute inset-y-0 right-0 -z-10 w-full scale-125 opacity-80 sm:scale-110 sm:opacity-90 lg:left-auto lg:w-[56%] lg:scale-100 lg:opacity-100"
+        /* The hard vertical edge was this element's own left boundary. At
+           lg:w-[56%] it started at 44% of the viewport, the canvas painted its
+           glow right up to that edge, and everything left of it was plain page
+           background. The scrim above is semi-transparent there, so the seam
+           read straight through it.
+
+           Two changes: the panel is wider, so its edge is no longer near the
+           middle of the composition, and its own left edge is masked so the
+           canvas fades out instead of being cut off. The mask is on the layer
+           that has the edge, which is the only place that can actually remove
+           it. */
+        className="pointer-events-none absolute inset-y-0 right-0 -z-10 w-full scale-125 opacity-80 [mask-image:linear-gradient(to_bottom,black_55%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_55%,transparent_100%)] sm:scale-110 sm:opacity-90 lg:left-auto lg:w-[74%] lg:scale-100 lg:opacity-100 lg:[mask-image:linear-gradient(to_right,transparent_0%,rgba(0,0,0,0.35)_18%,black_46%)] lg:[-webkit-mask-image:linear-gradient(to_right,transparent_0%,rgba(0,0,0,0.35)_18%,black_46%)]"
       >
         {/* The CSS stand-in paints immediately and is never swapped out by
             Suspense — it stays mounted underneath and cross-fades away only
@@ -139,14 +150,18 @@ export function Hero() {
           the visual is in its own right-hand column. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-[5] bg-[linear-gradient(180deg,var(--bg)_0%,transparent_88%)] opacity-75 lg:bg-[linear-gradient(100deg,var(--bg)_38%,transparent_62%)] lg:opacity-100"
+        className="pointer-events-none absolute inset-0 -z-[5] bg-[linear-gradient(180deg,var(--bg)_0%,transparent_88%)] opacity-75 lg:bg-[linear-gradient(95deg,var(--bg)_0%,var(--bg)_26%,rgba(0,0,0,0.55)_44%,transparent_70%)] lg:opacity-100"
       />
 
       <motion.div
         style={reduced ? undefined : { y: contentY, opacity: contentOpacity }}
-        className="section-shell relative z-10"
+        className="relative z-10 mx-auto w-full max-w-[110rem] px-5 md:px-10 lg:px-14 xl:px-20"
       >
-        <div className="max-w-[38rem] lg:max-w-[54%]">
+        {/* Wider bound and a smaller left inset than section-shell, which centres
+            inside 78rem and left a dead gutter before the copy even started.
+            The column itself is capped in ch so the measure stays readable no
+            matter how wide the viewport gets. */}
+        <div className="max-w-[38rem] lg:max-w-[46rem]">
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -161,7 +176,10 @@ export function Hero() {
           </motion.p>
 
           {/* Kinetic name: letters rise out of a clipped mask, one after another */}
-          <h1 className="mt-7 flex font-display text-[clamp(4.75rem,13.5vw,11rem)] font-bold leading-[0.82] tracking-[-0.05em]">
+          {/* Space Grotesk tops out at 700, so the extra weight has to come from
+              size and tracking rather than a heavier cut. Bigger, tighter, and
+              on a shorter line-height so it reads as one solid mass. */}
+          <h1 className="mt-6 flex font-display text-[clamp(5.25rem,15vw,13rem)] font-bold leading-[0.78] tracking-[-0.06em] text-ink">
             <span className="sr-only">{site.name}</span>
             {NAME.map((letter, index) => (
               <span key={index} aria-hidden className="overflow-hidden pb-[0.08em]">
@@ -181,17 +199,19 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.65, ease: EASE }}
-            className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-xl sm:text-2xl md:text-3xl"
+            className="mt-7 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-2xl font-semibold sm:text-3xl md:text-4xl"
           >
-            <span className="text-muted">I build as a</span>
-            <ScrambleText words={heroRoles} className="font-semibold text-accent" />
+            {/* The lead-in stays quieter than the role, but not muted grey:
+                against a headline this heavy it was disappearing. */}
+            <span className="text-ink/70">I build as a</span>
+            <ScrambleText words={heroRoles} className="font-bold text-accent" />
           </motion.div>
 
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.78, ease: EASE }}
-            className="mt-8 max-w-[42ch] text-lg leading-relaxed text-muted sm:text-xl"
+            className="mt-7 max-w-[46ch] text-lg leading-relaxed text-muted sm:text-xl"
           >
             I work across hardware, software and design instead of picking one. I
             model it, brand it, wire it up and ship it.
