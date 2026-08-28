@@ -25,6 +25,8 @@ export type SiteType = {
   includes: string[];
   /** Rough delivery window at standard pace. */
   weeks: string;
+  /** Marks the common starting point. Purely presentational; no pricing effect. */
+  recommended?: boolean;
 };
 
 export type Extra = {
@@ -54,6 +56,7 @@ export const siteTypes: SiteType[] = [
   {
     id: "business",
     label: "Business Site",
+    recommended: true,
     description: "A multi-page site that explains what you do and brings in enquiries.",
     range: [900, 1800],
     includes: ["Up to 6 custom pages", "Mobile-first responsive build", "Contact + enquiry routing", "On-page SEO across all pages", "Deployment + domain setup", "One round of post-launch tweaks"],

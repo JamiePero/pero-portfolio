@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import {
   PRICING_IS_PLACEHOLDER,
   extras,
+  extras as allExtras,
   formatMoney,
   siteTypes,
   timelines,
@@ -130,6 +131,7 @@ export function PricingBuilder() {
                               title={type.label}
                               description={type.description}
                               meta={`${formatMoney(type.range[0])} to ${formatMoney(type.range[1])} · ${type.weeks}`}
+                              badge={type.recommended ? "Most common" : undefined}
                               onSelect={() => {
                                 setTypeId(type.id);
                                 // Choosing a type is unambiguous — move on for them.
@@ -166,28 +168,11 @@ export function PricingBuilder() {
                       ) : null}
 
                       {step === 2 ? (
-                        <OptionStep
-                          question="How fast do you need it?"
-                          hint="Rush means you jump the queue and I clear other work."
-                        >
-                          {timelines.map((timeline) => (
-                            <OptionCard
-                              key={timeline.id}
-                              selected={timelineId === timeline.id}
-                              title={timeline.label}
-                              description={timeline.description}
-                              meta={
-                                timeline.multiplier === 1
-                                  ? selectedType?.weeks ?? "Standard pace"
-                                  : `+${Math.round((timeline.multiplier - 1) * 100)}%`
-                              }
-                              onSelect={() => {
-                                setTimelineId(timeline.id);
-                                window.setTimeout(() => go(3), 220);
-                              }}
-                            />
-                          ))}
-                        </OptionStep>
+                        <TimelineStep
+                          timelineId={timelineId}
+                          onChange={setTimelineId}
+                          standardWeeks={selectedType?.weeks ?? "the standard window"}
+                        />
                       ) : null}
 
                       {step === 3 && selectedType && quote ? (
@@ -220,7 +205,11 @@ export function PricingBuilder() {
                       variant={canAdvance ? "solid" : "outline"}
                       className={canAdvance ? "" : "pointer-events-none opacity-40"}
                     >
-                      {step === 1 && extraIds.length === 0 ? "Skip extras" : "Continue"}
+                      {step === 2
+                        ? "See the number"
+                        : step === 1 && extraIds.length === 0
+                          ? "Skip extras"
+                          : "Continue"}
                     </MagneticButton>
                   </div>
                 ) : null}
@@ -354,6 +343,97 @@ function OptionStep({
   );
 }
 
+/**
+ * Timeline step, as a real switch rather than two cards.
+ *
+ * There are exactly two options and they're opposites, which is what a toggle
+ * is for. Two selectable cards asked the reader to compare when the choice is
+ * really one lever. The state it drives is unchanged: it still sets timelineId
+ * from the same `timelines` data, so the multiplier maths is untouched.
+ */
+function TimelineStep({
+  timelineId,
+  onChange,
+  standardWeeks,
+}: {
+  timelineId: string;
+  onChange: (id: string) => void;
+  standardWeeks: string;
+}) {
+  const reduced = useReducedMotion();
+  const [standard, rush] = timelines;
+  const isRush = timelineId === rush.id;
+  const active = isRush ? rush : standard;
+  const uplift = Math.round((rush.multiplier - 1) * 100);
+
+  return (
+    <fieldset>
+      <legend className="font-display text-xl font-semibold tracking-tight sm:text-2xl">
+        How fast do you need it?
+      </legend>
+      <p className="mt-2 text-sm text-muted">
+        Rush means you jump the queue and I clear other work to fit you in.
+      </p>
+
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-4 sm:gap-5">
+        <span
+          className={`text-sm transition-colors duration-200 ${
+            isRush ? "text-muted" : "font-medium text-ink"
+          }`}
+        >
+          {standard.label}
+        </span>
+
+        <button
+          type="button"
+          role="switch"
+          aria-checked={isRush}
+          aria-label={`Rush delivery, adds ${uplift} percent`}
+          onClick={() => onChange(isRush ? standard.id : rush.id)}
+          data-cursor="hover"
+          className={`relative h-8 w-[3.75rem] shrink-0 rounded-full border transition-colors duration-300 ${
+            isRush ? "border-accent bg-accent/25" : "border-line-strong bg-surface"
+          }`}
+        >
+          <motion.span
+            aria-hidden
+            layout
+            transition={reduced ? { duration: 0 } : { type: "spring", stiffness: 500, damping: 34 }}
+            className={`absolute top-1/2 h-6 w-6 -translate-y-1/2 rounded-full shadow-sm ${
+              isRush ? "right-1 bg-accent" : "left-1 bg-line-strong"
+            }`}
+          />
+        </button>
+
+        <span
+          className={`text-sm transition-colors duration-200 ${
+            isRush ? "font-medium text-ink" : "text-muted"
+          }`}
+        >
+          {rush.label}{" "}
+          <span className={isRush ? "text-accent" : "text-muted"}>+{uplift}%</span>
+        </span>
+      </div>
+
+      {/* One card that rewrites itself, so the consequence of the switch is
+          visible without making the reader hold two descriptions in mind. */}
+      <motion.div
+        key={active.id}
+        initial={reduced ? undefined : { opacity: 0, y: 8 }}
+        animate={reduced ? undefined : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, ease: EASE }}
+        className="mx-auto mt-8 max-w-sm rounded-2xl border border-line bg-surface p-6 text-center"
+      >
+        <p className="font-display text-lg font-semibold text-ink">{active.label}</p>
+        <p className="mt-2 text-sm leading-relaxed text-muted">{active.description}</p>
+        <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.14em] text-accent">
+          {isRush ? `Adds ${uplift}% to the total` : `Roughly ${standardWeeks}`}
+        </p>
+      </motion.div>
+    </fieldset>
+  );
+}
+
 function OptionCard({
   selected,
   title,
@@ -361,6 +441,7 @@ function OptionCard({
   meta,
   onSelect,
   multi = false,
+  badge,
 }: {
   selected: boolean;
   title: string;
@@ -368,6 +449,8 @@ function OptionCard({
   meta: string;
   onSelect: () => void;
   multi?: boolean;
+  /** Small pill on the card, e.g. the most common starting point. */
+  badge?: string;
 }) {
   return (
     <button
@@ -382,6 +465,12 @@ function OptionCard({
           : "border-line bg-surface hover:border-line-strong"
       }`}
     >
+      {badge ? (
+        <span className="absolute -top-2.5 left-4 rounded-full border border-accent/50 bg-elevated px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] text-accent">
+          {badge}
+        </span>
+      ) : null}
+
       <span className="flex items-start justify-between gap-3">
         <span className="font-medium text-ink">{title}</span>
         <span
@@ -412,6 +501,42 @@ function OptionCard({
   );
 }
 
+/** Included. */
+function Tick() {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="mt-[0.15em] h-4 w-4 shrink-0 text-accent"
+    >
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  );
+}
+
+/** Not included. Muted so the ticks stay the thing you notice. */
+function Cross() {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="mt-[0.15em] h-4 w-4 shrink-0 text-muted/50"
+    >
+      <path d="M18 6 6 18M6 6l12 12" />
+    </svg>
+  );
+}
+
 function ResultPanel({
   quote,
   typeLabel,
@@ -434,21 +559,29 @@ function ResultPanel({
   return (
     <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:gap-12">
       <div>
-        <p className="eyebrow">Indicative range</p>
+        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+          Starting at
+        </p>
+
+        {/* The number carries the panel, so it gets the size. The upper bound
+            and the qualifier sit under it rather than competing on the line. */}
         <motion.p
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1, ease: EASE }}
-          className="mt-3 font-display text-4xl font-bold leading-none tracking-tight sm:text-5xl"
+          className="mt-2 font-display text-6xl font-bold leading-[0.95] tracking-tight text-ink sm:text-7xl"
         >
           {formatMoney(quote[0])}
-          <span className="text-muted"> to </span>
-          {formatMoney(quote[1])}
         </motion.p>
 
-        <p className="mt-4 max-w-[38ch] text-sm leading-relaxed text-muted">
+        <p className="mt-3 text-base text-muted">
+          up to <span className="font-medium text-ink">{formatMoney(quote[1])}</span>, depending on
+          scope
+        </p>
+
+        <p className="mt-5 max-w-[38ch] text-sm leading-relaxed text-muted">
           A {typeLabel.toLowerCase()} on a {timelineLabel.toLowerCase()} schedule, roughly{" "}
-          {weeks}. The exact number depends on scope, which is what the call is for.
+          {weeks}. The exact number is what the call is for.
         </p>
 
         <div className="mt-7 flex flex-wrap gap-3">
@@ -470,31 +603,36 @@ function ResultPanel({
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.35, delay: 0.15 + index * 0.05 }}
-              className="flex gap-2.5 text-sm text-muted"
+              className="flex items-start gap-2.5 text-sm text-muted"
             >
-              <span aria-hidden className="mt-[0.45em] h-1 w-1 shrink-0 rounded-full bg-accent" />
+              <Tick />
               {item}
             </motion.li>
           ))}
         </ul>
 
-        {extraLabels.length ? (
-          <>
-            <h4 className="mt-6 border-t border-line pt-5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
-              Add-ons
-            </h4>
-            <ul className="mt-3 flex flex-wrap gap-2">
-              {extraLabels.map((label) => (
-                <li
-                  key={label}
-                  className="rounded-md border border-accent/40 bg-accent/[0.07] px-2.5 py-1 font-mono text-[11px] text-accent"
-                >
-                  {label}
-                </li>
-              ))}
-            </ul>
-          </>
-        ) : null}
+        <h4 className="mt-6 border-t border-line pt-5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+          Add-ons
+        </h4>
+        <ul className="mt-4 space-y-2.5">
+          {allExtras.map((extra, index) => {
+            const taken = extraLabels.includes(extra.label);
+            return (
+              <motion.li
+                key={extra.id}
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.35, delay: 0.3 + index * 0.04 }}
+                className={`flex items-start gap-2.5 text-sm ${
+                  taken ? "text-ink" : "text-muted/55"
+                }`}
+              >
+                {taken ? <Tick /> : <Cross />}
+                {extra.label}
+              </motion.li>
+            );
+          })}
+        </ul>
       </div>
     </div>
   );
