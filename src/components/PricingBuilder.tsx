@@ -4,6 +4,7 @@ import {
   extras,
   extras as allExtras,
   formatMoney,
+  roundQuote,
   siteTypes,
   timelines,
   type PriceRange,
@@ -161,6 +162,7 @@ export function PricingBuilder() {
                         <ResultPanel
                           quote={quote}
                           typeLabel={selectedType.label}
+                          baseCeiling={selectedType.range[1]}
                           weeks={selectedType.weeks}
                           includes={selectedType.includes}
                           extras={selectedExtras.map((e) => e.label)}
@@ -522,6 +524,7 @@ function Cross() {
 function ResultPanel({
   quote,
   typeLabel,
+  baseCeiling,
   weeks,
   includes,
   extras: extraLabels,
@@ -531,6 +534,8 @@ function ResultPanel({
 }: {
   quote: PriceRange;
   typeLabel: string;
+  /** Top of the chosen tier's own range, before extras and timeline. */
+  baseCeiling: number;
   weeks: string;
   includes: string[];
   extras: string[];
@@ -565,6 +570,29 @@ function ResultPanel({
           A {typeLabel.toLowerCase()} on a {timelineLabel.toLowerCase()} schedule, roughly{" "}
           {weeks}. The exact number is what the call is for.
         </p>
+
+        {/* Only when the whole estimate sits at or above the tier's own
+            ceiling, which is the case that looks like a contradiction against
+            the range shown on the first step. Triggering on the upper bound
+            instead would fire on a single extra, and a note that shows on
+            almost every quote stops being read.
+
+            Compared on the rounded figure, not the raw one. The note exists to
+            explain what looks inconsistent on screen, and the screen shows
+            rounded money: the web app case computes to 2990 against a 3000
+            ceiling, but displays as 3000, so comparing raw values stayed silent
+            on exactly the quote that prompted this. */}
+        {roundQuote(quote[0]) >= baseCeiling ? (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.35 }}
+            className="mt-5 max-w-[40ch] border-l-2 border-line-strong pl-3.5 text-xs leading-relaxed text-muted"
+          >
+            This reflects the extras and timeline you picked, so it runs above the base{" "}
+            {typeLabel.toLowerCase()} range shown earlier.
+          </motion.p>
+        ) : null}
 
         <div className="mt-7 flex flex-wrap gap-3">
           <MagneticButton onClick={onRequest}>Request exact quote</MagneticButton>
