@@ -1,7 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { useMemo, useState } from "react";
 import {
-  PRICING_IS_PLACEHOLDER,
   extras,
   extras as allExtras,
   formatMoney,
@@ -87,23 +86,6 @@ export function PricingBuilder() {
           title="Want a website? Let's build one."
           lead="Answer three questions and you'll get an indicative range in about twenty seconds. It's a starting point for a conversation, not a final invoice."
         />
-
-        {PRICING_IS_PLACEHOLDER ? (
-          // TODO: Pero to supply real tiers in src/data/pricing.ts, then set
-          // PRICING_IS_PLACEHOLDER to false to remove this banner.
-          <Reveal delay={0.1}>
-            <p className="mt-8 inline-flex items-start gap-2.5 rounded-lg border border-dashed border-line-strong bg-elevated px-4 py-3 font-mono text-[11px] leading-relaxed text-muted">
-              <span aria-hidden className="mt-px text-accent">
-                ⚠
-              </span>
-              <span>
-                PLACEHOLDER PRICING. The numbers below are examples only.
-                <br />
-                TODO: Pero to provide real tiers in <code>src/data/pricing.ts</code>.
-              </span>
-            </p>
-          </Reveal>
-        ) : null}
 
         <Reveal delay={0.14}>
           <div className="mt-10 rounded-3xl border border-line bg-elevated p-6 sm:p-9 md:p-12">

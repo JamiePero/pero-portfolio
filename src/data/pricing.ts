@@ -1,18 +1,14 @@
 /* ===========================================================================
-   PRICING — ALL NUMBERS BELOW ARE PLACEHOLDERS.
-   TODO: Pero to provide real tiers. Every `range` is [low, high] in the
-   currency set by `currency` below. The UI reads these directly, so replacing
-   the numbers here is the only change needed — no component edits.
+   Pricing. Every `range` is [low, high] in the currency set below, and the
+   builder reads these directly, so changing a number here is the only edit
+   needed. Keep values as multiples of 50: formatMoney rounds to the nearest
+   50 for display, so anything else shows a different figure than it stores.
    =========================================================================== */
 
 export const currency = {
-  // TODO: Pero to confirm — switch to { code: "GHS", symbol: "₵" } if quoting locally.
   code: "USD",
   symbol: "$",
 } as const;
-
-/** Flip to false once real pricing lands — hides the "placeholder" banner. */
-export const PRICING_IS_PLACEHOLDER = true;
 
 export type PriceRange = [number, number];
 
@@ -49,7 +45,7 @@ export const siteTypes: SiteType[] = [
     id: "landing",
     label: "Landing Page",
     description: "One focused page built to convert. Product launch, campaign, or waitlist.",
-    range: [400, 800],
+    range: [200, 500],
     includes: ["Single page, custom design", "Mobile-first responsive build", "Contact / signup form", "Basic on-page SEO", "Deployment + domain setup"],
     weeks: "1 to 2 weeks",
   },
@@ -58,7 +54,7 @@ export const siteTypes: SiteType[] = [
     label: "Business Site",
     recommended: true,
     description: "A multi-page site that explains what you do and brings in enquiries.",
-    range: [900, 1800],
+    range: [500, 1500],
     includes: ["Up to 6 custom pages", "Mobile-first responsive build", "Contact + enquiry routing", "On-page SEO across all pages", "Deployment + domain setup", "One round of post-launch tweaks"],
     weeks: "2 to 4 weeks",
   },
@@ -66,7 +62,7 @@ export const siteTypes: SiteType[] = [
     id: "ecommerce",
     label: "E-commerce",
     description: "Storefront, cart and checkout, including mobile money and card rails.",
-    range: [1800, 4000],
+    range: [1500, 3000],
     includes: ["Product catalogue + collections", "Cart and checkout flow", "Payment integration (Paystack / MoMo / card)", "Order management", "Product-level SEO", "Deployment + domain setup"],
     weeks: "4 to 7 weeks",
   },
@@ -74,7 +70,7 @@ export const siteTypes: SiteType[] = [
     id: "webapp",
     label: "Web App",
     description: "Custom product with accounts, dashboards and real logic behind it.",
-    range: [3000, 9000],
+    range: [1500, 3000],
     includes: ["Custom frontend + backend", "Auth and user accounts", "Database + API design", "Admin dashboard", "Deployment and monitoring"],
     weeks: "6 to 12 weeks",
   },
@@ -82,7 +78,7 @@ export const siteTypes: SiteType[] = [
     id: "portfolio",
     label: "Portfolio",
     description: "A site that makes your work the point. Designed around the work itself.",
-    range: [500, 1200],
+    range: [350, 900],
     includes: ["Custom design around your work", "Project / case study layouts", "Image optimisation + lightbox", "Contact routing", "Deployment + domain setup"],
     weeks: "1 to 3 weeks",
   },
@@ -93,37 +89,37 @@ export const extras: Extra[] = [
     id: "seo",
     label: "SEO Setup",
     description: "Technical SEO, schema markup, sitemap, Core Web Vitals pass and Search Console.",
-    range: [250, 600],
+    range: [100, 300],
   },
   {
     id: "copy",
     label: "Copywriting",
     description: "Written from scratch for every page: headlines, body, CTAs.",
-    range: [200, 700],
+    range: [100, 250],
   },
   {
     id: "motion",
     label: "Animations",
     description: "Scroll choreography, micro-interactions and page transitions. Like this site.",
-    range: [300, 900],
+    range: [100, 300],
   },
   {
     id: "cms",
     label: "CMS / Admin Panel",
     description: "Edit your own content without touching code.",
-    range: [400, 1200],
+    range: [150, 300],
   },
   {
     id: "payments",
     label: "Booking / Payments",
     description: "Take bookings or payments through Paystack, Mobile Money or Stripe.",
-    range: [350, 1000],
+    range: [150, 300],
   },
   {
     id: "brand",
     label: "Logo & Brand",
     description: "Identity work bundled in: mark, colour system and type scale.",
-    range: [300, 900],
+    range: [100, 300],
   },
 ];
 
@@ -138,7 +134,7 @@ export const timelines: Timeline[] = [
     id: "rush",
     label: "Rush",
     description: "Front of the queue, compressed schedule. Priority on my end costs more.",
-    multiplier: 1.35,
+    multiplier: 1.3,
   },
 ];
 
