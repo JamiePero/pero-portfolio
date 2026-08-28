@@ -1,6 +1,4 @@
-import { useEffect } from "react";
 import { Hero } from "../components/Hero";
-import { site } from "../data/site";
 
 /**
  * The homepage is the hero alone.
@@ -10,9 +8,6 @@ import { site } from "../data/site";
  * stop making them scroll past six sections to reach one.
  */
 export function HomePage() {
-  useEffect(() => {
-    document.title = `${site.name} | Builder, 3D Modeler & Web Developer in Ghana`;
-  }, []);
 
   return <Hero />;
 }

@@ -1,7 +1,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { useState } from "react";
 import { services, type Service } from "../data/services";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MagneticButton } from "./MagneticButton";
 import { SectionHeading } from "./SectionHeading";
 
@@ -25,7 +25,15 @@ export function Services() {
           <MagneticButton onClick={() => navigate("/pricing")}>
             Price up a project
           </MagneticButton>
-          <p className="text-sm text-muted">Or skip ahead and just message me.</p>
+          {/* The obvious next question after reading a services list is whether
+              he has actually done any of it, so point at the proof. */}
+          <p className="text-sm text-muted">
+            Or see{" "}
+            <Link to="/work" className="link-underline text-accent">
+              what I've built
+            </Link>{" "}
+            with them.
+          </p>
         </div>
       </div>
     </section>

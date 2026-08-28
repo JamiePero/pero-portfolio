@@ -54,10 +54,6 @@ function useStreak(): Streak {
 export function DcaBotPage() {
   const streak = useStreak();
 
-  useEffect(() => {
-    document.title = "DCA Bot | Pero";
-  }, []);
-
   return (
     <section className="relative pb-24 pt-32 md:pb-32 md:pt-40">
       <div className="section-shell">

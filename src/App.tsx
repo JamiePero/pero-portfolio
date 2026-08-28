@@ -18,6 +18,7 @@ import { ToolsPage } from "./pages/ToolsPage";
 import { YouTubePage } from "./pages/YouTubePage";
 import { useSmoothScroll } from "./hooks/useSmoothScroll";
 import { useTheme } from "./hooks/useTheme";
+import { usePageMeta } from "./lib/usePageMeta";
 
 /**
  * Sends you to the top when the route changes, but not when only the hash does.
@@ -38,6 +39,8 @@ function ScrollToTopOnRouteChange() {
 function Shell() {
   const { theme, toggle } = useTheme();
   useSmoothScroll();
+  // One place, so no route can ship the wrong title, description or canonical.
+  usePageMeta();
 
   return (
     <>

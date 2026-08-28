@@ -67,10 +67,6 @@ export function YouTubePage() {
   const recent = useRecentVideos();
   const reduced = useReducedMotion();
 
-  useEffect(() => {
-    document.title = "Videos | Pero";
-  }, []);
-
   return (
     <section className="relative scroll-mt-24 pb-24 pt-32 md:pb-32 md:pt-40">
       <div className="section-shell">

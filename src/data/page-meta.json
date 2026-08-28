@@ -1,0 +1,42 @@
+{
+  "/": {
+    "title": "Pero | Builder, 3D Modeler & Web Developer in Ghana",
+    "description": "Pero builds across hardware, software and design from Ghana. 3D modelling, brand identity, Arduino and ESP32 systems, and web development with technical SEO."
+  },
+  "/about": {
+    "title": "About | Pero",
+    "description": "Pero is a builder in Ghana who works across 3D modelling, brand design, embedded hardware and web development instead of picking one of them."
+  },
+  "/work": {
+    "title": "Work | Pero",
+    "description": "Case studies on FlashX, gheasy and Jexi, covering Wi-Fi hotspot billing, no-login data bundles and an award-winning smart bin, plus client site builds."
+  },
+  "/design": {
+    "title": "Design | Pero",
+    "description": "3D product renders, identity systems and packaging, including the 4c Curls hair care range modelled in Fusion 360 and rendered in Blender."
+  },
+  "/services": {
+    "title": "Services | Pero",
+    "description": "3D modelling, logo and brand design, Arduino and ESP32 development, and web builds with technical SEO. Most projects need two or three of them at once."
+  },
+  "/pricing": {
+    "title": "Pricing | Pero",
+    "description": "Work out roughly what a website costs before either of us spends time on a call. Pick the kind of site, the extras you need, and a timeline."
+  },
+  "/contact": {
+    "title": "Contact | Pero",
+    "description": "Get in touch about freelance and client work across 3D, branding, hardware and web. Based in Ghana, working with clients anywhere."
+  },
+  "/youtube": {
+    "title": "Videos | Pero",
+    "description": "Builds and breakdowns from Pero's YouTube channel, covering 3D modelling, Arduino projects and the making of the Jexi smart bin."
+  },
+  "/tools": {
+    "title": "Tools | Pero",
+    "description": "Small utilities built for a real need and cleaned up enough to share, including a dollar cost averaging bot that proves every buy on chain."
+  },
+  "/tools/dca-bot": {
+    "title": "DCA Bot | Pero",
+    "description": "A bot that makes a small Solana token buy every day and proves each one on chain. Check the live streak, then join the waitlist."
+  }
+}

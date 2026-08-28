@@ -1,4 +1,5 @@
 import { motion, useReducedMotion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { useRef, type MouseEvent } from "react";
 import { skills } from "../data/services";
 import { Reveal, RevealWords } from "./Reveal";
@@ -63,6 +64,18 @@ export function About() {
             <SkillPill key={skill} label={skill} index={index} />
           ))}
         </ul>
+
+        {/* A bio that lists disciplines invites "show me", so close on the
+            evidence rather than leaving the nav to carry it. */}
+        <Reveal delay={0.1}>
+          <p className="mt-12 text-base text-muted">
+            The proof is in{" "}
+            <Link to="/work" className="link-underline text-accent">
+              the things I've shipped
+            </Link>
+            .
+          </p>
+        </Reveal>
       </div>
     </section>
   );

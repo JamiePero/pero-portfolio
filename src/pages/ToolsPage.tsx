@@ -1,13 +1,9 @@
 import { motion, useReducedMotion } from "framer-motion";
-import { useEffect } from "react";
 import { MagneticButton } from "../components/MagneticButton";
 import { SectionHeading } from "../components/SectionHeading";
 import { tools, type Tool } from "../data/tools";
 
 export function ToolsPage() {
-  useEffect(() => {
-    document.title = "Tools | Pero";
-  }, []);
 
   return (
     <section className="relative scroll-mt-24 pb-24 pt-32 md:pb-32 md:pt-40">
