@@ -41,12 +41,12 @@ export function hasSlowConnection(): boolean {
  * doesn't catch them either: mid-range big.LITTLE SoCs report 8 cores, they're
  * just slow ones. That combination was the hole a mid-range phone fell through.
  *
- * The cost of being wrong is asymmetric. A capable device wrongly excluded
- * loses some decoration; a weak one wrongly included gets a slow page.
+ * The ceiling is a parameter because the two features cost different amounts
+ * and so deserve different bars. See the two gates below.
  */
-export function isLowPoweredDevice(): boolean {
+export function isLowPoweredDevice(memoryCeilingGB: number): boolean {
   const memory = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
-  if (typeof memory === "number" && memory <= 4) return true;
+  if (typeof memory === "number" && memory <= memoryCeilingGB) return true;
   return Boolean(navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4);
 }
 
@@ -114,20 +114,32 @@ export function canRenderHeroGlass(): boolean {
   if (prefersReducedMotion()) return false;
   if (isCompactDevice()) return false;
   if (isUnverifiableTouchDevice()) return false;
-  if (isLowPoweredDevice()) return false;
+  // 4GB and 6GB phones both report exactly 4, and the ribbon is decoration, so
+  // the bar is strict: anything at or below 4GB takes the CSS stand-in.
+  if (isLowPoweredDevice(4)) return false;
   if (hasSlowConnection()) return false;
   return hasWebGL();
 }
 
 /**
- * The Smart Bin viewer. Same connection, power and WebGL rules as the hero, but
- * deliberately *not* gated on being a phone: this one is portfolio content
- * rather than decoration, and a phone on wi-fi should get to inspect the model.
- * 40k triangles across 33 draw calls is comfortable on a modern handset.
+ * The Smart Bin viewer.
+ *
+ * Deliberately more permissive than the hero, on both counts. It isn't gated on
+ * being a phone, and its memory bar is 2GB rather than 4GB.
+ *
+ * The two aren't comparable loads. The ribbon re-renders the scene into an
+ * offscreen buffer every frame; this is a static 40k-triangle mesh across 33
+ * draw calls that only redraws while someone is dragging it. A 4GB handset runs
+ * that comfortably. It's also content rather than decoration: someone who has
+ * scrolled this far into the Jexi case study has shown they want to see it,
+ * which the hero can't assume of a first-time visitor.
+ *
+ * Raising the shared bar to 4GB for the hero silently took this with it, since
+ * the two gates called the same check. Hence the explicit ceiling at each call.
  */
 export function canRenderModelViewer(): boolean {
   if (prefersReducedMotion()) return false;
-  if (isLowPoweredDevice()) return false;
+  if (isLowPoweredDevice(2)) return false;
   if (hasSlowConnection()) return false;
   return hasWebGL();
 }
@@ -151,7 +163,8 @@ export function capabilityReport() {
     modelViewer: canRenderModelViewer(),
     blockedBy: {
       reducedMotion: prefersReducedMotion(),
-      lowPowered: isLowPoweredDevice(),
+      lowPoweredForHero: isLowPoweredDevice(4),
+      lowPoweredForViewer: isLowPoweredDevice(2),
       unverifiableTouch: isUnverifiableTouchDevice(),
       slowConnection: hasSlowConnection(),
       noWebGL: !hasWebGL(),
